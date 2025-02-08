@@ -11,3 +11,6 @@ wheels/
 
 # Data folders
 data
+
+# Private files
+.env
