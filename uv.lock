@@ -571,6 +571,7 @@ dependencies = [
     { name = "aisuite", extra = ["groq", "openai"] },
     { name = "docling" },
     { name = "ipykernel" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -578,6 +579,7 @@ requires-dist = [
     { name = "aisuite", extras = ["groq", "openai"], specifier = ">=0.1.8" },
     { name = "docling", specifier = ">=2.20.0" },
     { name = "ipykernel", specifier = ">=6.29.5" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
 ]
 
 [[package]]
