@@ -198,7 +198,7 @@ def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
 
     output_recipes_full_info = []
     for recipe in recipes:
-        recipe_text = recipe['recipe_raw_text']
+        recipe_text = recipe['recipe_text']
         system_message = Config.system_message_template_dish_recipe.format(
             output_model_str=output_model_str
         )
