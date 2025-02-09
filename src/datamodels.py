@@ -4,22 +4,35 @@ from pydantic import BaseModel, Field
 
 
 class Request(BaseModel):
-    """a pydantic model to extract the request information"""
+    """A Pydantic model to extract and validate the request information from clients."""
 
-    ingredients_yes: List[str] = Field(
+    ingredients_ok: List[str] = Field(
         default=None, description="List of desired ingredients"
     )
-    ingredients_no: List[str] = Field(
+    ingredients_ko: List[str] = Field(
         default=None, description="List of undesired ingredients"
     )
-    techniques_yes: List[str] = Field(
+    techniques_ok: List[str] = Field(
         default=None, description="List of desired techniques"
     )
-    techniques_no: List[str] = Field(
+    techniques_ko: List[str] = Field(
         default=None, description="List of undesired techniques"
     )
     planets_ok: List[str] = Field(default=None, description="List of desired planets")
-    planets_ok: List[str] = Field(default=None, description="List of desired planets")
+    planets_ko: List[str] = Field(default=None, description="List of undesired planets")
+    restaurants_ok: List[str] = Field(
+        default=None, description="List of desired restaurants"
+    )
+    restaurants_ko: List[str] = Field(
+        default=None, description="List of undesired restaurants"
+    )
+    groups_ok: List[str] = Field(
+        default=None, description="List of desired groups of appartenence"
+    )
+    groups_ko: List[str] = Field(
+        default=None, description="List of undesired groups of appartenence"
+    )
     licences: List[Dict[str, str]] = Field(
-        default=None, description="List of dict with keys 'name' and 'level'"
+        default=None,
+        description="List of dict with keys 'name' and 'level' representing licences",
     )
