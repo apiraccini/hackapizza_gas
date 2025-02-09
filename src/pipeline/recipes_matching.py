@@ -103,7 +103,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     for question in question_data:
         parsed_question = question["parsed_question"]
         matching_recipes = []
-        matching_recipes_metadata = []
+        # matching_recipes_metadata = []
 
         for recipe in recipe_data:
             recipe_ingredients = recipe["recipe_ingredients"]
@@ -165,10 +165,10 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                     continue
 
             matching_recipes.append(recipe["recipe_name"])
-            matching_recipes_metadata.append(recipe)
+            # matching_recipes_metadata.append(recipe)
 
         question["matching_recipes"] = matching_recipes
-        question["matching_recipes_metadata"] = matching_recipes_metadata
+        # question["matching_recipes_metadata"] = matching_recipes_metadata
 
     return question_data
 
