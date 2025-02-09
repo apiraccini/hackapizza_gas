@@ -38,12 +38,8 @@ class Request(BaseModel):
     )
 
 class DishRecipe(BaseModel):
-    """A Pydantic model to extract and validate the information about a dish's recipe."""
+    """A Pydantic model to extract and validate the ingredients and techniques about a dish's recipe."""
 
-    
-    # recipe_text:str = Field(
-    #     default=None, description="Text of the recipe"
-    # )
     recipe_ingredients: List[str] = Field(
         default=None, description="List of ingredients that compose a recipe"
     )

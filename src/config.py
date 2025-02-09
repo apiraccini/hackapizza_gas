@@ -12,9 +12,9 @@ class Config:
     """
     
     system_message_template_dish_recipe = """
-    You are a helpful assistant that receive a JSON containing information about a recipe as input and should focus on the value in 'recipe_text' key.
+    You are a helpful assistant that receive a text containing information about a recipe as input.
     You must extract the information using the pydantic model below and return a JSON format.\n\n{output_model_str}"""
     message_template_dish_recipe = """
-    This is the JSON containing information about the recipe: {dish_recipe}.
-    Return only the JSON instance that receive as input, with added 'recipe_ingredients' and 'recipe_techniques' keys, where the values are recipe's ingredients and recipe's techniques respectively.
+    This is the text containing information about the recipe: {dish_recipe}.
+    Return only the JSON instance representing information about the recipe.
     """
