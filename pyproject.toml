@@ -1,5 +1,5 @@
 [project]
-name = "hackapizza_gas"
+name = "hackapizza_gan"
 version = "0.1.0"
 description = "Hackapizza solution"
 readme = "README.md"
