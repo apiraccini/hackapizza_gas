@@ -36,3 +36,17 @@ class Request(BaseModel):
         default=None,
         description="List of dict with keys 'name' and 'level' representing licences",
     )
+
+class DishRecipe(BaseModel):
+    """A Pydantic model to extract and validate the information about a dish's recipe."""
+
+    
+    # recipe_text:str = Field(
+    #     default=None, description="Text of the recipe"
+    # )
+    recipe_ingredients: List[str] = Field(
+        default=None, description="List of ingredients that compose a recipe"
+    )
+    recipe_techniques: List[str] = Field(
+        default=None, description="List of techniques used in the recipe"
+    )
