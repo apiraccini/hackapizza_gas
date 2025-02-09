@@ -45,10 +45,15 @@ def main():
     print("Saving results")
     df = pd.DataFrame(
         {
-            "row_id": range(
-                1, len(questions_recipes_mapped["matched_recipes_ids"]) + 1
-            ),
-            "result": questions_recipes_mapped["matched_recipes_ids"],
+            "row_id": range(1, len(questions_recipes_mapped) + 1),
+            "result": [
+                str(item["matching_recipes_ids"][0])
+                if len(item["matching_recipes_ids"]) == 1
+                else ",".join(map(str, item["matching_recipes_ids"]))
+                if item["matching_recipes_ids"]
+                else "0"
+                for item in questions_recipes_mapped
+            ],
         }
     )
     df.to_csv(data_path / "processed/result.csv", index=False)

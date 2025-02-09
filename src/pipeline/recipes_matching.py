@@ -2,66 +2,6 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-# example_data = [
-#     {
-#         "recipe_name": "Nebulosa Celestiale alla Stellaris",
-#         "recipe_raw_text": """
-#         Lasciatevi trasportare in un viaggio attraverso le profondità cosmiche con la nostra “Nebulosa Celestiale alla Stellaris”, una sinfonia culinaria che
-#         fonde la magia delle stelle con l'arte della cucina quantistica. Al centro del piatto brilla un arrosto di Carne di Balena Spaziale, sapientemente cotto
-#         utilizzando microonde entropiche sincronizzate per ottenere una superficie croccante e dorata che racchiude un cuore succulento.
-#         Accanto, la carne di Mucca, teneramente preparata con la cottura a vapore termocinetica multipla, si fonde armoniosamente con funghi dell'Etere
-#         fluttuanti, esaltando un delicato profumo che solletica i sensi. Un contorno di Riso di Cassandra cuoce con vapore a flusso di particelle
-#         isoarmoniche, ogni singolo chicco brilla come una stella danzante, conservando i suoi nutrienti e colori translucidi.
-#         Il sapore imprevedibile delle Shard di Materia Oscura è catturato in un'infusione sublime, avvolgendo tutto in un'atmosfera di meraviglia
-#         gravitazionale. Sorprendetevi con delle finissime teste di Idra, immerse in un consommé rigenerativo, la cui preparazione segue tecniche di taglio
-#         a risonanza sonica rigenerativa per assicurarne la sicurezza e il sapore impeccabile.
-#         A completare questa opera d'arte, il nostro Pane di Luce irradia energia dorata, pronto a raccogliere ogni sapore con la sua morbidezza. E, come
-#         culmine di questo viaggio stellare, una degustazione di Biscotti della Galassia ruota allegramente intorno al piatto; scaglie di stelle e zucchero
-#         cosmico, accanto a un velato sentore di spezie Melange, che prolungano l'esperienza con un dolce indugio presciente che eleva l'anima oltre le
-#         stelle.
-#         Ingredienti
-#         Shard di Materia Oscura
-#         Carne di Balena spaziale
-#         Carne di Mucca
-#         Teste di Idra
-#         Riso di Cassandra
-#         Biscotti della Galassia
-#         Pane di LuceFunghi dell'Etere
-#         Spezie Melange
-#         Tecniche
-#         Cottura a Vapore con Flusso di Particelle Isoarmoniche
-#         Cottura a Vapore Termocinetica Multipla
-#         Taglio a Risonanza Sonica Rigenerativa
-#         Cottura con Microonde Entropiche Sincronizzate""",
-#         "recipe_ingredients": [
-#             "Shard di Materia Oscura",
-#             "Carne di Balena spaziale",
-#             "Carne di Mucca",
-#             "Teste di Idra",
-#             "Riso di Cassandra",
-#             "Biscotti della Galassia",
-#             "Pane di Luce",
-#             "Funghi dell'Etere",
-#             "Spezie Melange",
-#         ],
-#         "recipe_techniques": [
-#             "Cottura a Vapore con Flusso di Particelle Isoarmoniche",
-#             "Cottura a Vapore Termocinetica Multipla",
-#             "Taglio a Risonanza Sonica Rigenerativa",
-#             "Cottura con Microonde Entropiche Sincronizzate",
-#         ],
-#     }
-# ]
-
-
-# def process_recipes_pipeline():
-#     """
-#     Processes the recipe data.
-#     Returns:
-#         dict: A dictionary containing the processed recipe data.
-#     """
-#     return example_data
-
 
 def match_recipes_pipeline(
     output_path: Path | str,
@@ -101,70 +41,82 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     """
 
     for question in question_data:
-        parsed_question = question["parsed_question"]
+        parsed_question = question.get("parsed_question", {})
         matching_recipes = []
         # matching_recipes_metadata = []
 
         for recipe in recipe_data:
-            recipe_ingredients = recipe["recipe_ingredients"]
-            recipe_techniques = recipe["recipe_techniques"]
+            recipe_ingredients = recipe.get("recipe_ingredients", [])
+            recipe_techniques = recipe.get("recipe_techniques", [])
 
             # Skip if recipe has no ingredients or techniques
             if not recipe_ingredients or not recipe_techniques:
                 continue
 
             # Check 'and' conditions for ingredients and techniques
-            if parsed_question["ingredients"]["and"]:
+            if parsed_question.get("ingredients") and parsed_question.get(
+                "ingredients"
+            ).get("and"):
                 if not all(
                     ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients"]["and"]
+                    for ingredient in parsed_question["ingredients"].get("and", [])
                 ):
                     continue
 
-            if parsed_question["techniques"]["and"]:
+            if parsed_question.get("techniques") and parsed_question.get(
+                "techniques"
+            ).get("and"):
                 if not all(
                     technique in recipe_techniques
-                    for technique in parsed_question["techniques"]["and"]
+                    for technique in parsed_question["techniques"].get("and", [])
                 ):
                     continue
 
             # Check 'or' conditions for ingredients and techniques
-            if parsed_question["ingredients"]["or"]:
+            if parsed_question.get("ingredients") and parsed_question.get(
+                "ingredients"
+            ).get("or"):
                 if len(
                     [
                         ingredient
                         for ingredient in recipe_ingredients
-                        if ingredient in parsed_question["ingredients"]["or"]
+                        if ingredient in parsed_question["ingredients"].get("or", [])
                     ]
                 ) < parsed_question["ingredients"].get("or_length", 1):
                     continue
 
-            if parsed_question["techniques"]["or"]:
+            if parsed_question.get("techniques") and parsed_question.get(
+                "techniques"
+            ).get("or"):
                 if len(
                     [
                         technique
                         for technique in recipe_techniques
-                        if technique in parsed_question["techniques"]["or"]
+                        if technique in parsed_question["techniques"].get("or", [])
                     ]
                 ) < parsed_question["techniques"].get("or_length", 1):
                     continue
 
             # Exclude recipes with 'not' ingredients or techniques
-            if parsed_question["ingredients"]["not"]:
+            if parsed_question.get("ingredients") and parsed_question.get(
+                "ingredients"
+            ).get("not"):
                 if any(
                     ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients"]["not"]
+                    for ingredient in parsed_question["ingredients"].get("not", [])
                 ):
                     continue
 
-            if parsed_question["techniques"]["not"]:
+            if parsed_question.get("techniques") and parsed_question.get(
+                "techniques",
+            ).get("not"):
                 if any(
                     technique in recipe_techniques
-                    for technique in parsed_question["techniques"]["not"]
+                    for technique in parsed_question["techniques"].get("not", [])
                 ):
                     continue
 
-            matching_recipes.append(recipe["recipe_name"])
+            matching_recipes.append(recipe.get("recipe_name"))
             # matching_recipes_metadata.append(recipe)
 
         question["matching_recipes"] = matching_recipes
