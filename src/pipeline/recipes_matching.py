@@ -109,48 +109,63 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             recipe_ingredients = recipe["recipe_ingredients"]
             recipe_techniques = recipe["recipe_techniques"]
 
-            # Check if any ingredient in the parsed question matches the recipe ingredients
-            if parsed_question["ingredients_ok"]:
+            # Skip if recipe has no ingredients or techniques
+            if not recipe_ingredients or not recipe_techniques:
+                continue
+
+            # Check 'and' conditions for ingredients and techniques
+            if parsed_question["ingredients"]["and"]:
+                if not all(
+                    ingredient in recipe_ingredients
+                    for ingredient in parsed_question["ingredients"]["and"]
+                ):
+                    continue
+
+            if parsed_question["techniques"]["and"]:
+                if not all(
+                    technique in recipe_techniques
+                    for technique in parsed_question["techniques"]["and"]
+                ):
+                    continue
+
+            # Check 'or' conditions for ingredients and techniques
+            if parsed_question["ingredients"]["or"]:
+                if len(
+                    [
+                        ingredient
+                        for ingredient in recipe_ingredients
+                        if ingredient in parsed_question["ingredients"]["or"]
+                    ]
+                ) < parsed_question["ingredients"].get("or_length", 1):
+                    continue
+
+            if parsed_question["techniques"]["or"]:
+                if len(
+                    [
+                        technique
+                        for technique in recipe_techniques
+                        if technique in parsed_question["techniques"]["or"]
+                    ]
+                ) < parsed_question["techniques"].get("or_length", 1):
+                    continue
+
+            # Exclude recipes with 'not' ingredients or techniques
+            if parsed_question["ingredients"]["not"]:
                 if any(
                     ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients_ok"]
+                    for ingredient in parsed_question["ingredients"]["not"]
                 ):
-                    matching_recipes.append(recipe["recipe_name"])
-                    matching_recipes_metadata.append(recipe)
+                    continue
 
-            # Check if any technique in the parsed question matches the recipe techniques
-            if parsed_question["techniques_ok"]:
+            if parsed_question["techniques"]["not"]:
                 if any(
                     technique in recipe_techniques
-                    for technique in parsed_question["techniques_ok"]
+                    for technique in parsed_question["techniques"]["not"]
                 ):
-                    matching_recipes.append(recipe["recipe_name"])
-                    matching_recipes_metadata.append(recipe)
+                    continue
 
-            # Exclude recipes with ingredients or techniques in the ko lists
-            if parsed_question["ingredients_ko"]:
-                if any(
-                    ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients_ko"]
-                ):
-                    matching_recipes = [
-                        r for r in matching_recipes if r != recipe["recipe_name"]
-                    ]
-                    matching_recipes_metadata = [
-                        r for r in matching_recipes_metadata if r != recipe
-                    ]
-
-            if parsed_question["techniques_ko"]:
-                if any(
-                    technique in recipe_techniques
-                    for technique in parsed_question["techniques_ko"]
-                ):
-                    matching_recipes = [
-                        r for r in matching_recipes if r != recipe["recipe_name"]
-                    ]
-                    matching_recipes_metadata = [
-                        r for r in matching_recipes_metadata if r != recipe
-                    ]
+            matching_recipes.append(recipe["recipe_name"])
+            matching_recipes_metadata.append(recipe)
 
         question["matching_recipes"] = matching_recipes
         question["matching_recipes_metadata"] = matching_recipes_metadata

@@ -2,6 +2,9 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, List
+
+from tqdm import tqdm
+
 from src.config import Config
 from src.utils.llm import call_llm, get_model_source
 
@@ -197,8 +200,9 @@ def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
     output_model_str = get_model_source("src.datamodels", "DishRecipe")
 
     output_recipes_full_info = []
-    for recipe in recipes:
-        recipe_text = recipe['recipe_text']
+    print(f"Processing {len(recipes)} recipes")
+    for recipe in tqdm(recipes):
+        recipe_text = recipe["recipe_text"]
         system_message = Config.system_message_template_dish_recipe.format(
             output_model_str=output_model_str
         )
@@ -215,7 +219,14 @@ def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
             recipe = {**recipe, **response}
             output_recipes_full_info.append(recipe)
         except Exception as e:
-            output_recipes_full_info.append({**recipe, "full_info": "Error"})
+            output_recipes_full_info.append(
+                {
+                    **recipe,
+                    "recipe_ingredients": f"Error: {e}",
+                    "recipe_techniques": "Error",
+                }
+            )
+
     return output_recipes_full_info
 
 
@@ -243,9 +254,3 @@ def process_recipes_pipeline(
             json.dump(all_recipes, f, indent=4)
 
     return all_recipes
-
-
-if __name__ == "__main__":
-    input_path = "data/processed/menu_md"
-    output_path = "data/processed/menu.json"
-    recipes_data = process_recipes_pipeline(input_path, output_path)
