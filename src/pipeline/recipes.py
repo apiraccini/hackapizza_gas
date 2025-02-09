@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, List
+from src.config import Config
+from src.utils.llm import call_llm, get_model_source
 
 
 def normalize_line(line):
@@ -190,10 +192,31 @@ def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
     Returns:
         list: List of recipe dictionaries with added ingredients and techniques.
     """
+    provider = Config.provider
+    model = Config.model
+    output_model_str = get_model_source("src.datamodels", "DishRecipe")
+
+    output_recipes_full_info = []
     for recipe in recipes:
-        recipe["recipe_ingredients"] = ["Ingredient 1", "Ingredient 2", "Ingredient 3"]
-        recipe["recipe_techniques"] = ["Technique 1", "Technique 2", "Technique 3"]
-    return recipes
+        recipe_text = recipe['recipe_raw_text']
+        system_message = Config.system_message_template_dish_recipe.format(
+            output_model_str=output_model_str
+        )
+        message = Config.message_template_dish_recipe.format(dish_recipe=recipe_text)
+
+        try:
+            response = call_llm(
+                message=message,
+                sys_message=system_message,
+                model=f"{provider}:{model}",
+                json_output=True,
+            )
+            response = json.loads(response)
+            recipe = {**recipe, **response}
+            output_recipes_full_info.append(recipe)
+        except Exception as e:
+            output_recipes_full_info.append({**recipe, "full_info": "Error"})
+    return output_recipes_full_info
 
 
 def process_recipes_pipeline(
