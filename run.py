@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 
 from src.pipeline.questions import process_questions_pipeline
-from src.pipeline.recipes import match_recipes_pipeline, process_recipes_pipeline
+from src.pipeline.recipes import process_recipes_pipeline
+from src.pipeline.recipes_matching import match_recipes_pipeline
 
 
 def main():
@@ -11,16 +12,19 @@ def main():
     # Define paths
     data_path = Path("data")
     questions_path = data_path / "raw/domande.csv"
-    parsed_questions_path = data_path / "processed/parsed_questions.json"
+    raw_recipes_path = data_path / "processed/menu_md"
     recipes_mapping_path = data_path / "raw/Misc/dish_mapping.json"
 
     # Process questions
     questions_data = process_questions_pipeline(
-        input_path=questions_path, output_path=parsed_questions_path
+        input_path=questions_path,
+        output_path=data_path / "processed/parsed_questions.json",
     )
 
     # Process recipes
-    recipes_data = process_recipes_pipeline()
+    recipes_data = process_recipes_pipeline(
+        input_path=raw_recipes_path, output_path=data_path / "processed/recipes.json"
+    )
     recipes_mapping = json.load(open(recipes_mapping_path))
 
     questions_recipes_mapped = match_recipes_pipeline(
