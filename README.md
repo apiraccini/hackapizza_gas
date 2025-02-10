@@ -72,11 +72,13 @@ To contribute to this project, follow these steps:
 
 - [ ] datamodels - think about how to handle the situation 'ingredients or techinques' 
 - [x] datamodels - add list of known values when applicable (restaurants, planets)
-- [ ] markdown - check (and fix) markdown files before final ingestion
+- [x] markdown - fix markdown files
+
 - [ ] recipes - extract quantities for restriced ingredients 
-- [ ] restaurants - extract and process restaurant descriptions and licences
-- [ ] filters - on restaurant descriptions and licenses
+- [x] restaurants - extract and process restaurant descriptions and licences
+- [ ] restaurants - explore blog posts
+
+- [ ] filters - on restaurant and planets (handling of distances)
+- [ ] filters - on techinque parent groups (obtain during postprocessing, otherwise it messes up technique extraction)
 - [ ] filters - on techinques licences (galactic code)
-- [x] filters - on techinque groups
 - [ ] filters - on groups of appartenence (galactic code)
-- [ ] filters - on distance planets (Misc/Distance.csv)
