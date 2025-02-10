@@ -78,7 +78,7 @@ class Request(BaseModel):
         default=None,
         description="Dictionary with keys: 'and' for desired groups of appartenence, 'or' for optional groups, 'or_length' for the length of optional groups, 'not' for undesired groups",
     )
-    licences: conlist(Dict[Literal["name", "level"], str], min_items=0) = Field(
+    licences: conlist(Dict[Literal["name", "level"], str], min_length=0) = Field(
         default=None,
         description="List of dicts with keys: 'name' for license name, 'level' for licences",
     )
@@ -95,7 +95,7 @@ class Request(BaseModel):
             "Montressosr",
             "Klyntar",
         ],
-        min_items=0,
+        min_length=0,
     ) = Field(
         default=None,
         description="List of desired planets",
@@ -117,13 +117,13 @@ class Request(BaseModel):
             "Montressosr",
             "Klyntar",
         ],
-        min_items=0,
+        min_length=0,
     ) = Field(
         default=None,
         description="List of undesired planets",
     )
     galactic_code: conlist(
-        Literal["corrette licenze e certificazioni", "quantita legali"], min_items=0
+        Literal["corrette licenze e certificazioni", "quantita legali"], min_length=0
     ) = Field(
         default=None,
         description="List of galactic code requirements",
@@ -133,10 +133,10 @@ class Request(BaseModel):
 class DishRecipe(BaseModel):
     """A Pydantic model to extract and validate the ingredients and techniques about a dish's recipe."""
 
-    recipe_ingredients: conlist(str, min_items=0) = Field(
+    recipe_ingredients: conlist(str, min_length=0) = Field(
         default=None, description="List of ingredients that compose a recipe"
     )
-    recipe_techniques: conlist(str, min_items=0) = Field(
+    recipe_techniques: conlist(str, min_length=0) = Field(
         default=None, description="List of techniques used in the recipe"
     )
     recipe_techniques_groups: conlist(
@@ -153,7 +153,7 @@ class DishRecipe(BaseModel):
             "Grigliatura",
             "Cottura",
         ],
-        min_items=0,
+        min_length=0,
     ) = Field(
         default=None,
         description="List of parent groups of the techniques used in the recipe",
