@@ -46,75 +46,49 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
         # matching_recipes_metadata = []
 
         for recipe in recipe_data:
-            recipe_ingredients = recipe.get("recipe_ingredients", [])
-            recipe_techniques = recipe.get("recipe_techniques", [])
+            # Check 'and' conditions
+            for key in [
+                "recipe_ingredients",
+                "recipe_techniques",
+                "recipe_techniques_groups",
+                "recipe_restaurants",
+            ]:
+                if parsed_question.get(key) and parsed_question.get(key).get("and"):
+                    if not all(
+                        item in recipe.get(key)
+                        for item in parsed_question[key].get("and", [])
+                    ):
+                        continue
 
-            # Skip if recipe has no ingredients or techniques
-            if not recipe_ingredients or not recipe_techniques:
-                continue
+            # Check 'or' conditions
+            for key in [
+                "recipe_ingredients",
+                "recipe_techniques",
+                "recipe_techniques_groups",
+                "recipe_restaurants",
+            ]:
+                if parsed_question.get(key) and parsed_question.get(key).get("or"):
+                    if not any(
+                        item in recipe.get(key)
+                        for item in parsed_question[key].get("or", [])
+                    ):
+                        continue
 
-            # Check 'and' conditions for ingredients and techniques
-            if parsed_question.get("ingredients") and parsed_question.get(
-                "ingredients"
-            ).get("and"):
-                if not all(
-                    ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients"].get("and", [])
-                ):
-                    continue
+            # Check 'not' conditions
+            for key in [
+                "recipe_ingredients",
+                "recipe_techniques",
+                "recipe_techniques_groups",
+                "recipe_restaurants",
+            ]:
+                if parsed_question.get(key) and parsed_question.get(key).get("not"):
+                    if any(
+                        item in recipe.get(key)
+                        for item in parsed_question[key].get("not", [])
+                    ):
+                        continue
 
-            if parsed_question.get("techniques") and parsed_question.get(
-                "techniques"
-            ).get("and"):
-                if not all(
-                    technique in recipe_techniques
-                    for technique in parsed_question["techniques"].get("and", [])
-                ):
-                    continue
-
-            # Check 'or' conditions for ingredients and techniques
-            if parsed_question.get("ingredients") and parsed_question.get(
-                "ingredients"
-            ).get("or"):
-                if len(
-                    [
-                        ingredient
-                        for ingredient in recipe_ingredients
-                        if ingredient in parsed_question["ingredients"].get("or", [])
-                    ]
-                ) < parsed_question["ingredients"].get("or_length", 1):
-                    continue
-
-            if parsed_question.get("techniques") and parsed_question.get(
-                "techniques"
-            ).get("or"):
-                if len(
-                    [
-                        technique
-                        for technique in recipe_techniques
-                        if technique in parsed_question["techniques"].get("or", [])
-                    ]
-                ) < parsed_question["techniques"].get("or_length", 1):
-                    continue
-
-            # Exclude recipes with 'not' ingredients or techniques
-            if parsed_question.get("ingredients") and parsed_question.get(
-                "ingredients"
-            ).get("not"):
-                if any(
-                    ingredient in recipe_ingredients
-                    for ingredient in parsed_question["ingredients"].get("not", [])
-                ):
-                    continue
-
-            if parsed_question.get("techniques") and parsed_question.get(
-                "techniques",
-            ).get("not"):
-                if any(
-                    technique in recipe_techniques
-                    for technique in parsed_question["techniques"].get("not", [])
-                ):
-                    continue
+            # Additional filters
 
             matching_recipes.append(recipe.get("recipe_name"))
             # matching_recipes_metadata.append(recipe)
