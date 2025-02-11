@@ -3,7 +3,7 @@ from typing import Dict, List, Literal
 from pydantic import BaseModel, Field, conlist
 
 
-class Request(BaseModel):
+class RequestModel(BaseModel):
     """A Pydantic model to extract and validate the request information from clients."""
 
     ingredients: Dict[Literal["and", "or", "or_length", "not"], List[str]] = Field(
@@ -54,21 +54,7 @@ class Request(BaseModel):
         default=None,
         description="Dictionary with keys: 'and' for desired restaurants, 'or' for optional restaurants, 'or_length' for the length of optional restaurants, 'not' for undesired restaurants",
     )
-    # order_info: Dict[
-    #     Literal["and", "or", "or_length", "not"],
-    #     List[
-    #         Literal[
-    #             "Ordine della Galassia di Andromeda",
-    #             "Ordine dei Naturalisti",
-    #             "Ordine degli Armonisti",
-    #         ]
-    #     ],
-    # ] = Field(
-    #     default=None,
-    #     description="Dictionary with keys: 'and' for desired groups of appartenence, 'or' for optional groups, 'or_length' for the length of optional groups, 'not' for undesired groups",
-    # )
-
-    order_ok: conlist(
+    groups_ok: conlist(
         Literal[
             "Ordine della Galassia di Andromeda",
             "Ordine dei Naturalisti",
@@ -77,9 +63,8 @@ class Request(BaseModel):
         min_length=0,
     ) = Field(
         default=None,
-        description="List of desired orders",
+        description="List of desired groups of appartenence",
     )
-
     licences: conlist(Dict[Literal["name", "level"], str], min_length=0) = Field(
         default=None,
         description="List of dicts with keys: 'name' for license name, 'level' for licences",
@@ -106,24 +91,6 @@ class Request(BaseModel):
         default=None,
         description="List of distances in light years from the desired planets",
     )
-    planets_ko: conlist(
-        Literal[
-            "Tatooine",
-            "Asgard",
-            "Namecc",
-            "Arrakis",
-            "Krypton",
-            "Pandora",
-            "Cybertron",
-            "Ego",
-            "Montressosr",
-            "Klyntar",
-        ],
-        min_length=0,
-    ) = Field(
-        default=None,
-        description="List of undesired planets",
-    )
     galactic_code: conlist(
         Literal["corrette licenze e certificazioni", "quantita legali"], min_length=0
     ) = Field(
@@ -132,7 +99,7 @@ class Request(BaseModel):
     )
 
 
-class DishRecipe(BaseModel):
+class RecipeModel(BaseModel):
     """A Pydantic model to extract and validate the ingredients and techniques about a dish's recipe."""
 
     recipe_ingredients: conlist(str, min_length=0) = Field(
@@ -143,7 +110,7 @@ class DishRecipe(BaseModel):
     )
 
 
-class Restaurant(BaseModel):
+class RestaurantModel(BaseModel):
     """A Pydantic model to extract and validate the information about a restaurant."""
 
     planet: conlist(

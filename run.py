@@ -2,7 +2,7 @@ import json
 
 from src.config import Config
 from src.pipeline.questions import process_questions_pipeline
-from src.pipeline.recipes import process_answer_pipeline
+from src.pipeline.recipes import process_recipes_pipeline
 from src.pipeline.recipes_matching import match_recipes_pipeline
 from src.utils.misc import get_output_df
 
@@ -20,11 +20,10 @@ def main():
     )
 
     # Process recipes
-    recipes_data = process_answer_pipeline(
+    recipes_data = process_recipes_pipeline(
         input_path=paths["raw_recipes_path"],
         recipes_output_path=paths["output_recipes_path"],
-        restaurant_output_path=paths["restaurant_output_path"],
-        to_answer_output=paths["to_answer_output"],
+        restaurant_output_path=paths["output_restaurants_path"],
     )
     recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
 
