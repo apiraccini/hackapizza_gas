@@ -130,6 +130,65 @@ def extract_recipes(text, default_restaurant, default_chef):
     return recipes
 
 
+def extract_restaurant_text(text: str) -> str:
+    """
+    Extracts the text from immediately after the chef header up to (but not including) the "## Menu" header.
+
+    This function searches for a line that contains the word "Chef" (case-insensitive) and, if found,
+    extracts all subsequent text (i.e. text following the entire line that contains "Chef")
+    until the "## Menu" header is encountered.
+    Neither the chef header line nor the menu header is included in the result.
+
+    If the chef header is not found, extraction starts from the beginning of the text.
+    If the menu header is not found, extraction continues to the end of the text.
+    """
+    # Find the line that contains "Chef" (case-insensitive).
+    chef_line_match = re.search(r"(?im)^.*Chef.*$", text)
+    if chef_line_match:
+        # Start extraction after the entire chef line.
+        start_index = chef_line_match.end()
+    else:
+        start_index = 0
+
+    # Find the "## Menu" header.
+    menu_match = re.search(r"(?im)^##\s*Menu.*$", text)
+    if menu_match:
+        end_index = menu_match.start()
+    else:
+        end_index = len(text)
+
+    # Extract and return the text between the chef line and the menu header.
+    return text[start_index:end_index].strip()
+
+
+# def process_file(filepath):
+#     """
+#     Opens the markdown file, normalizes the lines, and extracts:
+#       - global information (restaurant and chef)
+#       - the recipes present
+#     All in a "robust" manner: if the file is poorly formatted or data is missing,
+#     the code does not generate errors but uses empty strings as defaults.
+#     """
+#     try:
+#         with open(filepath, "r", encoding="utf-8") as f:
+#             content = f.read()
+#     except Exception as e:
+#         print(f"Error reading file {filepath}: {e}")
+#         return []  # In case of error, return an empty list
+
+#     # Normalize each line of the file
+#     lines = content.splitlines()
+#     normalized_lines = [normalize_line(line) for line in lines]
+#     normalized_text = "\n".join(normalized_lines)
+
+#     # Extract global information (restaurant and chef)
+#     restaurant_name, chef_name = extract_global_info(normalized_text)
+
+#     # Extract the recipes present in the file, using global data as defaults
+#     recipes = extract_recipes(normalized_text, restaurant_name, chef_name)
+#     return recipes
+
+
 def process_file(filepath):
     """
     Opens the markdown file, normalizes the lines, and extracts:
@@ -155,10 +214,48 @@ def process_file(filepath):
 
     # Extract the recipes present in the file, using global data as defaults
     recipes = extract_recipes(normalized_text, restaurant_name, chef_name)
-    return recipes
+    restaurant = {
+        "restaurant_name": restaurant_name,
+        "chef_name": chef_name,
+        "restaurant_text": extract_restaurant_text(normalized_text),
+    }
+    return recipes, restaurant
 
 
-def prepare_menu_data(input_path: Path | str, output_path: Path | str) -> List[Dict]:
+# def prepare_menu_data(input_path: Path | str, output_path: Path | str) -> List[Dict]:
+#     """
+#     Processes the recipe data from markdown files in the input directory and saves the result to a JSON file.
+#     Args:
+#         input_path (str): Path to the input directory containing markdown files.
+#         output_path (str): Path to the output JSON file.
+#     Returns:
+#         list: A list of dictionaries containing the processed recipe data.
+#     """
+#     input_dir = Path(input_path)
+#     output_file = Path(output_path)
+
+#     if output_file.exists():
+#         with output_file.open("r") as f:
+#             all_recipes = json.load(f)
+#     else:
+#         all_recipes = []
+#         md_files = list(input_dir.glob("*.md"))
+
+#         for md_file in md_files:
+#             file_recipes = process_file(md_file)
+#             all_recipes.extend(file_recipes)
+
+#         with output_file.open("w") as f:
+#             json.dump(all_recipes, f, indent=4)
+
+#     return all_recipes
+
+
+def ingest_md_to_json(
+    input_path: Path | str,
+    recipes_output_path: Path | str,
+    restaurant_output_path: Path | str,
+) -> List[Dict]:
     """
     Processes the recipe data from markdown files in the input directory and saves the result to a JSON file.
     Args:
@@ -168,23 +265,69 @@ def prepare_menu_data(input_path: Path | str, output_path: Path | str) -> List[D
         list: A list of dictionaries containing the processed recipe data.
     """
     input_dir = Path(input_path)
-    output_file = Path(output_path)
+    recipes_output_path = Path(recipes_output_path)
+    restaurant_output_path = Path(restaurant_output_path)
 
-    if output_file.exists():
-        with output_file.open("r") as f:
-            all_recipes = json.load(f)
-    else:
-        all_recipes = []
-        md_files = list(input_dir.glob("*.md"))
+    all_recipes = []
+    all_restaurants = []
+    md_files = list(input_dir.glob("*.md"))
 
-        for md_file in md_files:
-            file_recipes = process_file(md_file)
-            all_recipes.extend(file_recipes)
+    for md_file in md_files:
+        file_recipes, file_restaurant = process_file(md_file)
 
-        with output_file.open("w") as f:
-            json.dump(all_recipes, f, indent=4)
+        all_recipes.extend(file_recipes)
+        all_restaurants.append(file_restaurant)
 
-    return all_recipes
+    with recipes_output_path.open("w") as f:
+        json.dump(all_recipes, f, indent=4)
+
+    with restaurant_output_path.open("w") as f:
+        json.dump(all_restaurants, f, indent=4)
+
+    output = {"recipes": all_recipes, "restaurant": all_restaurants}
+
+    return output
+
+
+# def llm_menu_text(
+#     dict_list: List[Dict],
+#     output_model_str: str,
+#     key_text: str
+# ) -> List[Dict]:
+
+#     provider = Config.provider
+#     model = Config.model
+#     # output_model_str = get_model_source("src.datamodels", "DishRecipe")
+
+#     output_full_info = []
+#     print(f"Processing {len(dict_list)} {key_text}")
+#     for recipe in tqdm(dict_list):
+#         recipe_text = dict_list[key_text]
+#         system_message = Config.system_message_template_dish_recipe.format(
+#             output_model_str=output_model_str
+#         )
+#         message = Config.message_template_dish_recipe.format(request=recipe_text)
+
+#         try:
+#             response = call_llm(
+#                 message=message,
+#                 sys_message=system_message,
+#                 model=f"{provider}:{model}",
+#                 json_output=True,
+#             )
+#             response = json.loads(response)
+#             recipe = {**recipe, **response}
+#             output_full_info.append(recipe)
+#         except Exception as e:
+#             output_full_info.append(
+#                 {
+#                     **recipe,
+#                     "recipe_ingredients": f"Error: {e}",
+#                     "recipe_techniques": "Error",
+#                 }
+#             )
+
+#     return output_full_info
 
 
 def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
@@ -230,8 +373,56 @@ def add_ingredients_and_techniques(recipes: List[Dict]) -> List[Dict]:
     return output_recipes_full_info
 
 
-def process_recipes_pipeline(
-    input_path: Path | str, output_path: Path | str
+def add_planets_and_order(restaurant: List[Dict]) -> List[Dict]:
+    """
+    Adds fake ingredients and techniques to each restaurant.
+    Args:
+        restaurant (list): List of restaurant dictionaries.
+    Returns:
+        list: List of restaurant dictionaries with added ingredients and techniques.
+    """
+    provider = Config.provider
+    model = Config.model
+    output_model_str = get_model_source("src.datamodels", "Restaurant")
+
+    output_restaurants_full_info = []
+    print(f"Processing {len(restaurant)} restaurant")
+    for restaurant in tqdm(restaurant):
+        restaurant_text = restaurant["restaurant_text"]
+        system_message = Config.system_message_template_restaurant_recipe.format(
+            output_model_str=output_model_str
+        )
+        message = Config.system_message_template_restaurant_recipe.format(
+            request=restaurant_text
+        )
+
+        try:
+            response = call_llm(
+                message=message,
+                sys_message=system_message,
+                model=f"{provider}:{model}",
+                json_output=True,
+            )
+            response = json.loads(response)
+            restaurant = {**restaurant, **response}
+            output_restaurants_full_info.append(restaurant)
+        except Exception as e:
+            output_restaurants_full_info.append(
+                {
+                    **restaurant,
+                    "planet_info": f"Error: {e}",
+                    "order_info": "Error",
+                }
+            )
+
+    return output_restaurants_full_info
+
+
+def process_answer_pipeline(
+    input_path: Path | str,
+    recipes_output_path: Path | str,
+    restaurant_output_path: Path | str,
+    to_answer_output: Path | str,
 ) -> List[Dict]:
     """
     Processes the recipe data from markdown files, adds ingredients and techniques, and saves the result to a JSON file.
@@ -241,16 +432,55 @@ def process_recipes_pipeline(
     Returns:
         list: A list of dictionaries containing the processed recipe data.
     """
-    output_file = Path(output_path)
+    recipes_output_path = Path(recipes_output_path)
+    restaurant_output_path = Path(restaurant_output_path)
+    to_answer_output = Path(restaurant_output_path)
 
-    if output_file.exists():
-        with output_file.open("r") as f:
+    if recipes_output_path.exists():
+        with recipes_output_path.open("r") as f:
             all_recipes = json.load(f)
     else:
-        all_recipes = prepare_menu_data(input_path, output_file)
+        all_recipes = ingest_md_to_json(
+            input_path, recipes_output_path, restaurant_output_path
+        )["recipes"]
         all_recipes = add_ingredients_and_techniques(all_recipes)
 
-        with output_file.open("w") as f:
+        with recipes_output_path.open("w") as f:
             json.dump(all_recipes, f, indent=4)
 
-    return all_recipes
+    if restaurant_output_path.exists():
+        with restaurant_output_path.open("r") as f:
+            all_restaurants = json.load(f)
+    else:
+        all_restaurants = ingest_md_to_json(
+            input_path, recipes_output_path, restaurant_output_path
+        )["restaurant"]
+        all_restaurants = add_planets_and_order(all_restaurants)
+
+        with restaurant_output_path.open("w") as f:
+            json.dump(all_restaurants, f, indent=4)
+
+    if to_answer_output.exists():
+        with to_answer_output.open("r") as f:
+            to_answer = json.load(f)
+    else:
+        to_answer = []
+        recipes_restaurants = {
+            recipe["recipes_restaurant"]: recipe for recipe in all_recipes
+        }
+
+        for restaurant in all_restaurants:
+            restaurant_name_tmp = restaurant["restaurant_name"]
+        if restaurant_name_tmp in recipes_restaurants:
+            join_recipe_restaurant = {
+                **restaurant,
+                **recipes_restaurants[restaurant_name_tmp],
+            }
+            to_answer.append(join_recipe_restaurant)
+        else:
+            to_answer.append(restaurant)
+
+        with to_answer_output.open("w") as f:
+            json.dump(to_answer_output, f, indent=4)
+
+    return to_answer

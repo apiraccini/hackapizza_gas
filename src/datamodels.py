@@ -54,19 +54,32 @@ class Request(BaseModel):
         default=None,
         description="Dictionary with keys: 'and' for desired restaurants, 'or' for optional restaurants, 'or_length' for the length of optional restaurants, 'not' for undesired restaurants",
     )
-    groups: Dict[
-        Literal["and", "or", "or_length", "not"],
-        List[
-            Literal[
-                "Ordine della Galassia di Andromeda",
-                "Ordine dei Naturalisti",
-                "Ordine degli Armonisti",
-            ]
+    # order_info: Dict[
+    #     Literal["and", "or", "or_length", "not"],
+    #     List[
+    #         Literal[
+    #             "Ordine della Galassia di Andromeda",
+    #             "Ordine dei Naturalisti",
+    #             "Ordine degli Armonisti",
+    #         ]
+    #     ],
+    # ] = Field(
+    #     default=None,
+    #     description="Dictionary with keys: 'and' for desired groups of appartenence, 'or' for optional groups, 'or_length' for the length of optional groups, 'not' for undesired groups",
+    # )
+
+    order_ok: conlist(
+        Literal[
+            "Ordine della Galassia di Andromeda",
+            "Ordine dei Naturalisti",
+            "Ordine degli Armonisti",
         ],
-    ] = Field(
+        min_length=0,
+    ) = Field(
         default=None,
-        description="Dictionary with keys: 'and' for desired groups of appartenence, 'or' for optional groups, 'or_length' for the length of optional groups, 'not' for undesired groups",
+        description="List of desired orders",
     )
+
     licences: conlist(Dict[Literal["name", "level"], str], min_length=0) = Field(
         default=None,
         description="List of dicts with keys: 'name' for license name, 'level' for licences",

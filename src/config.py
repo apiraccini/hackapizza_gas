@@ -51,11 +51,13 @@ class Config:
     def get_data_paths():
         if Config.debug:
             return {
-                "questions_path": "data/debug/domande.csv",
-                "raw_recipes_path": "data/debug/menu_md",
+                "questions_path": "data/raw/domande.csv",
+                "raw_recipes_path": "data/processed/menu_md",
                 "recipes_mapping_path": "data/raw/Misc/dish_mapping.json",
                 "output_questions_path": "data/debug/questions.json",
                 "output_recipes_path": "data/debug/recipes.json",
+                "restaurant_output_path": "data/debug/restaurants.json",
+                "to_answer_output": "data/debug/to_answer.json",
                 "output_mapped_path": "data/debug/questions_with_recipes.json",
                 "output_result_path": "data/debug/result.csv",
             }
@@ -67,5 +69,7 @@ class Config:
                 "output_questions_path": "data/processed/questions.json",
                 "output_recipes_path": "data/processed/recipes.json",
                 "output_mapped_path": "data/processed/questions_with_recipes.json",
+                "restaurant_output_path": "data/processed/restaurants.json",
+                "to_answer_output": "data/processed/to_answer.json",
                 "output_result_path": "data/processed/result.csv",
             }

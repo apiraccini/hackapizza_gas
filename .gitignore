@@ -14,3 +14,6 @@ data
 
 # Private files
 .env
+
+# Personal notebook
+prove_gian.ipynb

@@ -96,6 +96,14 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                     ):
                         continue
 
+            # Additional filters - orders
+            for key1, key2 in [("order_info", "order_ok")]:
+                if parsed_question.get(key2):
+                    if not any(
+                        item in recipe.get(key1) for item in parsed_question[key]
+                    ):
+                        continue
+
             matching_recipes.append(recipe.get("recipe_name"))
             # matching_recipes_metadata.append(recipe)
 
