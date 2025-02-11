@@ -88,16 +88,11 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                     ):
                         continue
 
-            # Additional filters - planets
-            for key1, key2 in [("planet_info", "planets_ok")]:
-                if parsed_question.get(key2):
-                    if not any(
-                        item in recipe.get(key1) for item in parsed_question[key]
-                    ):
-                        continue
-
-            # Additional filters - orders
-            for key1, key2 in [("order_info", "order_ok")]:
+            # Additional filters - planets, orders
+            for key1, key2 in [
+                ("planet_info", "planets_ok"),
+                ("group_info", "groups_ok"),
+            ]:
                 if parsed_question.get(key2):
                     if not any(
                         item in recipe.get(key1) for item in parsed_question[key]

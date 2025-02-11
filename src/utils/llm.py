@@ -5,7 +5,6 @@ import os
 from typing import Dict, List
 
 import aisuite as ai
-import pandas as pd
 from dotenv import load_dotenv
 from tqdm import tqdm
 
@@ -15,17 +14,17 @@ load_dotenv()
 
 
 def process_dataframe(
-    df: pd.DataFrame,
-    column: str,
+    data: List[Dict[str, str]],
+    key: str,
     system_message_template: str,
     message_template: str,
     output_model_str: str,
 ) -> List[Dict[str, str]]:
-    """Processes a DataFrame to extract relevant information using a language model.
+    """Processes a list of dictionaries to extract relevant information using a language model.
 
     Args:
-        df (pd.DataFrame): DataFrame containing the data.
-        column (str): Column name to process.
+        data (List[Dict[str, str]]): List of dictionaries containing the data.
+        key (str): Key to process.
         system_message_template (str): Template for the system message.
         message_template (str): Template for the user message.
         output_model_str (str): String representation of the output model.
@@ -37,12 +36,11 @@ def process_dataframe(
     provider = Config.provider
     model = Config.model
 
-    output = []
-    for item in tqdm(df[column]):
+    for item in tqdm(data):
         system_message = system_message_template.format(
             output_model_str=output_model_str
         )
-        message = message_template.format(request=item)
+        message = message_template.format(request=item[key])
 
         try:
             response = call_llm(
@@ -52,11 +50,11 @@ def process_dataframe(
                 json_output=True,
             )
             response = json.loads(response)
-            output.append({"original": item, "parsed": response})
+            item.update(response)
         except Exception:
-            output.append({"original": item, "parsed": "Error"})
+            item["error"] = "Error"
 
-    return output
+    return data
 
 
 def call_llm(

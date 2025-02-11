@@ -222,4 +222,6 @@ def ingest_md_to_json(
     with restaurant_output_path.open("w") as f:
         json.dump(all_recipes, f, indent=4)
 
-    return all_recipes, all_restaurants
+    output = {"recipes": all_recipes, "restaurants": all_restaurants}
+
+    return output
