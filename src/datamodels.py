@@ -14,67 +14,56 @@ class Request(BaseModel):
         default=None,
         description="Dictionary with keys: 'and' for desired techniques, 'or' for optional techniques, 'or_length' for the length of optional techniques, 'not' for undesired techniques",
     )
-    techniques_groups: Dict[
-        Literal["and", "or", "or_length", "not"],
-        List[
-            Literal[
-                "Marinatura",
-                "Affumicatura",
-                "Fermentazione",
-                "Decostruzione",
-                "Sferificazione",
-                "Tecniche di Taglio",
-                "Tecniche di Impasto",
-                "Surgelamento",
-                "Bolllitura",
-                "Grigliatura",
-                "Cottura",
-            ]
-        ],
-    ] = Field(
-        default=None,
-        description="Dictionary with keys: 'and' for desired techniques groups, 'or' for optional techniques groups, 'or_length' for the length of optional techniques groups, 'not' for undesired techniques groups",
-    )
     restaurants: Dict[
         Literal["and", "or", "or_length", "not"],
         List[
             Literal[
-                "Il Firmamento",
                 "Anima Cosmica",
-                "L'Equilibrio Quantico",
-                "L'Essenza del Multiverso su Pandora",
-                "Le Dimensioni del Gusto",
-                "L'Essenza di Asgard",
-                "Datapizza",
+                "L Eco dei Sapori",
                 "Sapore del Dune",
-                "L'Essenza Cosmica",
-                "L'Oasi delle Dune Stellari",
-                "Quantico",
-                "Le Stelle Danzanti",
-                "Stelle Astrofisiche",
+                "L Architetto dell Universo",
+                "L Essenza di Asgard",
+                "Il Firmamento",
+                "Eco di Pandora",
+                "L Equilibrio Quantico",
+                "L Infinito Sapore",
                 "Le Stelle che Ballano",
-                "L'Eco dei Sapori",
-                "Sala del Valhalla",
+                "Essenza dell Infinito",
+                "L infinito in un Boccone",
+                "L Etere del Gusto",
+                "L Universo in Cucina",
                 "Cosmica Essenza",
-                "L'Architetto dell'Universo",
-                "L'Eco di Pandora",
-                "Stelle dell'Infinito Celestiale",
-                "Tutti a TARSvola",
-                "L'Infinito in un Boccone",
-                "L'Eredità Galattica",
-                "L'Etere del Gusto",
-                "Armonia Universale",
-                "Il Ristorante delle Dune Stellari",
+                "Sala del Valhalla",
+                "Le Stelle Danzanti",
                 "Universo Gastronomico di Namecc",
-                "L'Universo in Cucina",
-                "L'Essenza dell'Infinito",
+                "Eredita Galattica",
+                "L Oasi delle Dune Stellari",
+                "Ristorante delle Dune Stellari",
+                "L Essenza delle Dune",
+                "Ristorante Quantico",
+                "Stelle Astrofisiche",
+                "Stelle dell Infinito Celestiale",
+                "L Essenza del Multiverso su Pandora",
+                "L Essenza Cosmica",
+                "Armonia Universale",
+                "Tutti a TARSvola",
+                "Le Dimensioni del Gusto",
             ]
         ],
     ] = Field(
         default=None,
         description="Dictionary with keys: 'and' for desired restaurants, 'or' for optional restaurants, 'or_length' for the length of optional restaurants, 'not' for undesired restaurants",
     )
-    groups: Dict[Literal["and", "or", "or_length", "not"], List[str]] = Field(
+    groups: Dict[
+        Literal["and", "or", "or_length", "not"],
+        List[
+            Literal[
+                "Ordine della Galassia di Andromeda",
+                "Ordine dei Naturalisti",
+                "Ordine degli Armonisti",
+            ]
+        ],
+    ] = Field(
         default=None,
         description="Dictionary with keys: 'and' for desired groups of appartenence, 'or' for optional groups, 'or_length' for the length of optional groups, 'not' for undesired groups",
     )
@@ -139,22 +128,38 @@ class DishRecipe(BaseModel):
     recipe_techniques: conlist(str, min_length=0) = Field(
         default=None, description="List of techniques used in the recipe"
     )
-    recipe_techniques_groups: conlist(
+
+
+class Restaurant(BaseModel):
+    """A Pydantic model to extract and validate the information about a restaurant."""
+
+    planet: conlist(
         Literal[
-            "Marinatura",
-            "Affumicatura",
-            "Fermentazione",
-            "Decostruzione",
-            "Sferificazione",
-            "Tecniche di Taglio",
-            "Tecniche di Impasto",
-            "Surgelamento",
-            "Bolllitura",
-            "Grigliatura",
-            "Cottura",
+            "Tatooine",
+            "Asgard",
+            "Namecc",
+            "Arrakis",
+            "Krypton",
+            "Pandora",
+            "Cybertron",
+            "Ego",
+            "Montressosr",
+            "Klyntar",
         ],
         min_length=0,
-    ) = Field(
+    ) = (
+        Field(
+            default=None,
+            description="Planet of the restaurant",
+        ),
+    )
+    groups: List[
+        Literal[
+            "Ordine della Galassia di Andromeda",
+            "Ordine dei Naturalisti",
+            "Ordine degli Armonisti",
+        ]
+    ] = Field(
         default=None,
-        description="List of parent groups of the techniques used in the recipe",
+        description="List of groups that can be served by the restaurant, if specifically mentioned",
     )

@@ -1,42 +1,33 @@
 import json
-from pathlib import Path
 
+from src.config import Config
 from src.pipeline.questions import process_questions_pipeline
 from src.pipeline.recipes import process_recipes_pipeline
 from src.pipeline.recipes_matching import match_recipes_pipeline
-from src.utils.misc import get_output_df, normalise_strings
+from src.utils.misc import get_output_df
 
 
 def main():
     """Main pipeline"""
-    print("Starting main pipeline")
 
-    # Define paths
-    data_path = Path("data")
-    questions_path = data_path / "raw/domande.csv"
-    raw_recipes_path = data_path / "processed/menu_md"
-    recipes_mapping_path = data_path / "raw/Misc/dish_mapping.json"
+    # Get data paths
+    paths = Config.get_data_paths()
 
     # Process questions
-    print("Processing questions")
     questions_data = process_questions_pipeline(
-        input_path=questions_path,
-        output_path=data_path / "processed/parsed_questions.json",
+        input_path=paths["questions_path"],
+        output_path=paths["output_questions_path"],
     )
-    questions_data = normalise_strings(questions_data)
 
     # Process recipes
-    print("Processing recipes")
     recipes_data = process_recipes_pipeline(
-        input_path=raw_recipes_path, output_path=data_path / "processed/recipes.json"
+        input_path=paths["raw_recipes_path"], output_path=paths["output_recipes_path"]
     )
-    recipes_data = normalise_strings(recipes_data)
-    recipes_mapping = json.load(open(recipes_mapping_path))
+    recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
 
     # Match recipes with questions
-    print("Matching recipes with questions")
     questions_recipes_mapped = match_recipes_pipeline(
-        output_path="data/processed/questions_with_recipes.json",
+        output_path=paths["output_mapped_path"],
         recipes_data=recipes_data,
         questions_data=questions_data,
         mapping=recipes_mapping,
@@ -45,7 +36,7 @@ def main():
     # Save results
     print("Saving results")
     df = get_output_df(questions_recipes_mapped)
-    df.to_csv(data_path / "processed/result.csv", index=False)
+    df.to_csv(paths["output_result_path"], index=False)
 
     print("Pipeline completed successfully")
 
