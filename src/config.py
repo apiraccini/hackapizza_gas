@@ -47,6 +47,8 @@ class Config:
     Return only the JSON instance representing information about the restaurant.
     """
 
+    distances_file = "data/raw/Misc/Distanze.csv"
+
     @staticmethod
     def get_data_paths():
         if Config.debug:

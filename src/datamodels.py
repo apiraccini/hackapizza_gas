@@ -87,9 +87,9 @@ class RequestModel(BaseModel):
         default=None,
         description="List of desired planets",
     )
-    planets_distance: List[str] = Field(
+    planets_distance: int = Field(
         default=None,
-        description="List of distances in light years from the desired planets",
+        description="Distance in light years from the desired planet",
     )
     galactic_code: conlist(
         Literal["corrette licenze e certificazioni", "quantita legali"], min_length=0

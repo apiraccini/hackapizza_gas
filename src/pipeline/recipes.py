@@ -3,8 +3,10 @@ from pathlib import Path
 from typing import Dict, List
 
 from src.config import Config
+from src.utils.ingestion import ingest_md_to_json
 from src.utils.llm import get_model_source, process_dataframe
-from src.utils.recipes import ingest_md_to_json
+from src.utils.misc import normalise_strings
+from src.utils.recipes import add_restaurant_info_to_recipes
 
 
 def process_recipes_pipeline(
@@ -51,6 +53,12 @@ def process_recipes_pipeline(
             message_template=Config.message_template_restaurant_recipe,
             output_model_str=get_model_source("src.datamodels", "RestaurantModel"),
         )
+
+        all_recipes, all_restaurants = (
+            normalise_strings(all_recipes),
+            normalise_strings(all_restaurants),
+        )
+        all_recipes = add_restaurant_info_to_recipes(all_recipes, all_restaurants)
 
         with recipes_output_path.open("w") as f:
             json.dump(all_recipes, f, indent=4)
