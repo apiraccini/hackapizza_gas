@@ -116,6 +116,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                     )
                     for license in chef_licenses
                 ):
+                    print("It works!")
                     continue
 
             matching_recipes.append(recipe.get("recipe_name"))
