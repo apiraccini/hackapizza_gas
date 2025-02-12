@@ -20,7 +20,7 @@ def main():
     )
 
     # Process recipes
-    recipes_data = process_recipes_pipeline(
+    recipes_data, _ = process_recipes_pipeline(
         input_path=paths["raw_recipes_path"],
         recipes_output_path=paths["output_recipes_path"],
         restaurant_output_path=paths["output_restaurants_path"],
