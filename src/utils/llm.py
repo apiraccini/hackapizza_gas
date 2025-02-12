@@ -13,7 +13,7 @@ from src.config import Config
 load_dotenv()
 
 
-def process_dataframe(
+def process_data(
     data: List[Dict[str, str]],
     key: str,
     system_message_template: str,
@@ -90,8 +90,8 @@ def call_llm(
             model=model, messages=messages, response_format=response_format
         )
     else:
-        response = client.chat.completions.create(model=model, messages=messages) 
-    
+        response = client.chat.completions.create(model=model, messages=messages)
+
     return response.choices[0].message.content
 
 

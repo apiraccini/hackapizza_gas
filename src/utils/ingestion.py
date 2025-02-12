@@ -1,4 +1,3 @@
-import json
 import re
 from pathlib import Path
 from typing import Dict, List
@@ -189,11 +188,7 @@ def process_file(filepath):
     return recipes, restaurant
 
 
-def ingest_md_to_json(
-    input_path: Path | str,
-    recipes_output_path: Path | str,
-    restaurant_output_path: Path | str,
-) -> List[Dict]:
+def ingest_md_to_json(input_path: Path | str) -> List[Dict]:
     """
     Processes the recipe data from markdown files in the input directory and saves the result to a JSON file.
     Args:
@@ -203,8 +198,6 @@ def ingest_md_to_json(
         list: A list of dictionaries containing the processed recipe data.
     """
     input_dir = Path(input_path)
-    recipes_output_path = Path(recipes_output_path)
-    restaurant_output_path = Path(restaurant_output_path)
 
     all_recipes = []
     all_restaurants = []
@@ -215,12 +208,6 @@ def ingest_md_to_json(
 
         all_recipes.extend(file_recipes)
         all_restaurants.append(file_restaurant)
-
-    with recipes_output_path.open("w") as f:
-        json.dump(all_recipes, f, indent=4)
-
-    with restaurant_output_path.open("w") as f:
-        json.dump(all_recipes, f, indent=4)
 
     output = {"recipes": all_recipes, "restaurants": all_restaurants}
 

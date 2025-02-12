@@ -42,14 +42,10 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     Returns:
         list: A list of questions with appended matching recipes.
     """
-    contatore = 0
-    contatore_condizione1 = 0
     for question in question_data:
         matching_recipes = []
 
         for recipe in recipe_data:
-            contatore += 1
-            skip_recipe = False
             # Check 'and' conditions
             for q_key, r_key in [
                 ("ingredients", "recipe_ingredients"),
@@ -64,8 +60,6 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                             item in recipe.get(r_key, ["error"])
                             for item in question[q_key].get("and", [])
                         ):
-                            contatore_condizione1 += 1
-                            skip_recipe = True
                             continue
 
             # Check 'or' conditions
@@ -82,7 +76,6 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                             item in recipe.get(r_key, ["error"])
                             for item in question[q_key].get("or", [])
                         ):
-                            skip_recipe = True
                             continue
 
             # Check 'not' conditions
@@ -99,27 +92,35 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                             item in recipe.get(r_key, ["error"])
                             for item in question[q_key].get("not", [])
                         ):
-                            skip_recipe = True
                             continue
 
             # Additional filters - planets, orders
             for q_key, r_key in [
-                ("planets_ok", "planet"),
-                ("group_info", "group"),
+                ("planets_ok", "restaurant_planet"),
+                ("group", "group"),
             ]:
                 if question.get(q_key):
                     if not any(item in recipe.get(r_key) for item in question[q_key]):
-                        skip_recipe = True
                         continue
-            if skip_recipe:
-                continue
+
+            # Filter based on licenses
+            if question.get("licences"):
+                required_license = question["licence"]
+                chef_licenses = recipe.get("chef_licences", [])
+                if not any(
+                    license["name"] == required_license["name"]
+                    and (
+                        license["level"] >= required_license["level"]
+                        if required_license["condition"] == "higher"
+                        else license["level"] == required_license["level"]
+                    )
+                    for license in chef_licenses
+                ):
+                    continue
+
             matching_recipes.append(recipe.get("recipe_name"))
 
-        # import pdb
-
-        # pdb.set_trace()
         question["matching_recipes"] = matching_recipes
-        # question["matching_recipes_metadata"] = matching_recipes_metadata
 
     return question_data
 

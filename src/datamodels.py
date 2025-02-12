@@ -3,6 +3,27 @@ from typing import Dict, List, Literal
 from pydantic import BaseModel, Field, conlist
 
 
+class LicenseModel(BaseModel):
+    """A Pydantic model to represent the license information."""
+
+    name: Literal[
+        "Psionica (P)",
+        "Gravitazionale (G)",
+        "Antimateria (e+)",
+        "Magnetica (Mx)",
+        "grado tecnologico LTK",
+    ] = Field(default=None, description="Name of the license")
+    level: str = Field(default=None, description="Level of the license")
+
+
+class LicenseRequestModel(LicenseModel):
+    """A Pydantic model to represent the license information with condition for requests."""
+
+    condition: Literal["higher", "equal"] = Field(
+        default="equal", description="Condition for the license level"
+    )
+
+
 class RequestModel(BaseModel):
     """A Pydantic model to extract and validate the request information from clients."""
 
@@ -54,20 +75,17 @@ class RequestModel(BaseModel):
         default=None,
         description="Dictionary with keys: 'and' for desired restaurants, 'or' for optional restaurants, 'or_length' for the length of optional restaurants, 'not' for undesired restaurants",
     )
-    groups_ok: conlist(
-        Literal[
-            "Ordine della Galassia di Andromeda",
-            "Ordine dei Naturalisti",
-            "Ordine degli Armonisti",
-        ],
-        min_length=0,
-    ) = Field(
+    group: Literal[
+        "Ordine della Galassia di Andromeda",
+        "Ordine dei Naturalisti",
+        "Ordine degli Armonisti",
+    ] = Field(
         default=None,
-        description="List of desired groups of appartenence",
+        description="Desired groups of appartenence for the client",
     )
-    licences: conlist(Dict[Literal["name", "level"], str], min_length=0) = Field(
+    licence: LicenseRequestModel = Field(
         default=None,
-        description="List of dicts with keys: 'name' for license name, 'level' for licences",
+        description="License required for performing the mentioned technique, with name, level, and condition",
     )
     planets_ok: conlist(
         Literal[
@@ -108,12 +126,23 @@ class RecipeModel(BaseModel):
     recipe_techniques: conlist(str, min_length=0) = Field(
         default=None, description="List of techniques used in the recipe"
     )
+    recipe_group: Literal[
+        "Ordine della Galassia di Andromeda",
+        "Ordine dei Naturalisti",
+        "Ordine degli Armonisti",
+    ] = Field(
+        default=None,
+        description="Group of people that can eat that recipe (if specifically mentioned)",
+    )
 
 
 class RestaurantModel(BaseModel):
     """A Pydantic model to extract and validate the information about a restaurant."""
 
-    planet: conlist(
+    restaurant_chef: str = Field(
+        default=None, description="Name of the chef of the restaurant"
+    )
+    restaurant_planet: conlist(
         Literal[
             "Tatooine",
             "Asgard",
@@ -127,19 +156,11 @@ class RestaurantModel(BaseModel):
             "Klyntar",
         ],
         min_length=0,
-    ) = (
-        Field(
-            default=None,
-            description="Planet of the restaurant",
-        ),
-    )
-    groups: List[
-        Literal[
-            "Ordine della Galassia di Andromeda",
-            "Ordine dei Naturalisti",
-            "Ordine degli Armonisti",
-        ]
-    ] = Field(
+    ) = Field(
         default=None,
-        description="List of groups that can be served by the restaurant, if specifically mentioned",
+        description="Planet of the restaurant",
+    )
+    chef_licences: conlist(LicenseModel, min_length=0) = Field(
+        default=None,
+        description="List of licenses held by the chef",
     )

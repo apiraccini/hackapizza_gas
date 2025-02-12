@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.config import Config
-from src.utils.llm import get_model_source, process_dataframe
+from src.utils.llm import get_model_source, process_data
 from src.utils.misc import normalise_strings
 from src.utils.questions import update_planet_keys
 
@@ -23,20 +23,22 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
 
     if output_file.exists():
         with output_file.open("r") as f:
-            processed_questions_list = json.load(f)
+            out = json.load(f)
     else:
         questions_df = pd.read_csv(input_file)
         questions_data = questions_df.to_dict(orient="records")
-        processed_questions_list = process_dataframe(
+        processed_questions_list = process_data(
             data=questions_data,
             key="domanda",
             system_message_template=Config.system_message_template_questions,
             message_template=Config.message_template_questions,
             output_model_str=get_model_source("src.datamodels", "RequestModel"),
         )
+
+        out = update_planet_keys(processed_questions_list, Config.distances_file)
+        out = normalise_strings(out)
+
         with output_file.open("w") as f:
-            json.dump(processed_questions_list, f, indent=4)
+            json.dump(out, f, indent=4)
 
-    out = update_planet_keys(processed_questions_list, Config.distances_file)
-
-    return normalise_strings(out)
+    return out
