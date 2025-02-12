@@ -1,7 +1,10 @@
+from pathlib import Path
+
+
 class Config:
     """Configuration class for the project."""
 
-    debug = False
+    debug = True
 
     provider = "groq"
     model = "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-qwen-32b", "llama-3.3-70b-versatile"
@@ -49,27 +52,16 @@ class Config:
 
     distances_file = "data/raw/Misc/Distanze.csv"
 
-    @staticmethod
-    def get_data_paths():
-        if Config.debug:
-            return {
-                "questions_path": "data/debug/domande.csv",
-                "raw_recipes_path": "data/debug/menu_md",
-                "recipes_mapping_path": "data/raw/Misc/dish_mapping.json",
-                "output_questions_path": "data/debug/questions.json",
-                "output_recipes_path": "data/debug/recipes.json",
-                "output_restaurants_path": "data/debug/restaurants.json",
-                "output_mapped_path": "data/debug/questions_with_recipes.json",
-                "output_result_path": "data/debug/result.csv",
-            }
-        else:
-            return {
-                "questions_path": "data/raw/domande.csv",
-                "raw_recipes_path": "data/processed/menu_md",
-                "recipes_mapping_path": "data/raw/Misc/dish_mapping.json",
-                "output_questions_path": "data/processed/questions.json",
-                "output_recipes_path": "data/processed/recipes.json",
-                "output_restaurants_path": "data/processed/restaurants.json",
-                "output_mapped_path": "data/processed/questions_with_recipes.json",
-                "output_result_path": "data/processed/result.csv",
-            }
+    data_path = Path("data/debug") if debug else Path("data/processed")
+    data_path_dict = {
+        "input_questions_path": data_path / "domande.csv"
+        if debug
+        else Path("data/raw/domande.csv"),
+        "input_recipes_path": data_path / "menu_md",
+        "recipes_mapping_path": "data/raw/Misc/dish_mapping.json",
+        "output_questions_path": data_path / "questions.json",
+        "output_recipes_path": data_path / "recipes.json",
+        "output_restaurants_path": data_path / "restaurants.json",
+        "output_result_json": data_path / "result.json",
+        "output_result_path": data_path / "result.csv",
+    }

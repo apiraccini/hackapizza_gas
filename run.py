@@ -4,35 +4,39 @@ from src.config import Config
 from src.pipeline.questions import process_questions_pipeline
 from src.pipeline.recipes import process_recipes_pipeline
 from src.pipeline.recipes_matching import match_recipes_pipeline
-from src.utils.misc import get_output_df, normalise_string
+from src.utils.misc import get_output_df, normalise_keys
 
 
 def main():
     """Main pipeline"""
+    print("Starting pipeline")
 
     # Get data paths
-    paths = Config.get_data_paths()
+    paths = Config.data_path_dict
+    print("Data paths retrieved")
 
     # Process questions
+    print("Processing questions")
     questions_data = process_questions_pipeline(
-        input_path=paths["questions_path"],
+        input_path=paths["input_questions_path"],
         output_path=paths["output_questions_path"],
     )
 
     # Process recipes
+    print("Processing recipes")
+    recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
+    recipes_mapping = normalise_keys(recipes_mapping)
+
     recipes_data, _ = process_recipes_pipeline(
-        input_path=paths["raw_recipes_path"],
+        input_path=paths["input_recipes_path"],
         recipes_output_path=paths["output_recipes_path"],
         restaurant_output_path=paths["output_restaurants_path"],
     )
-    recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
-    recipes_mapping = {
-        normalise_string(key): value for key, value in recipes_mapping.items()
-    }
 
     # Match recipes with questions
+    print("Matching recipes with questions")
     questions_recipes_mapped = match_recipes_pipeline(
-        output_path=paths["output_mapped_path"],
+        output_path=paths["output_result_json"],
         recipes_data=recipes_data,
         questions_data=questions_data,
         mapping=recipes_mapping,

@@ -22,26 +22,8 @@ def get_output_df(data: List[Dict]) -> pd.DataFrame:
     return df
 
 
-def normalise_keys(data: dict) -> dict:
-    def normalise_string(s: str) -> str:
-        s = s.lower()  # Converte in minuscolo
-        s = re.sub(r"\W+", " ", s)  # Sostituisce caratteri non alfanumerici con spazio
-        s = s.strip()  # Rimuove eventuali spazi iniziali e finali
-        s = s.replace(" ", "_")  # Sostituisce gli spazi con underscore
-        return s
-
-    # Crea un nuovo dizionario normalizzando le chiavi, mantenendo inalterati i valori
-    return {normalise_string(key): value for key, value in data.items()}
-
-
 def normalise_strings(data: List[Dict]) -> List[Dict]:
     """Normalises strings in a list of dictionaries."""
-
-    def normalise_string(s: str) -> str:
-        s = s.lower()
-        s = re.sub(r"\W+", " ", s)
-        s = s.replace(" ", "_")
-        return s
 
     def normalise_value(value):
         if isinstance(value, str):
@@ -59,6 +41,10 @@ def normalise_strings(data: List[Dict]) -> List[Dict]:
         normalised_data.append(normalised_item)
 
     return normalised_data
+
+
+def normalise_keys(data: dict) -> dict:
+    return {normalise_string(key): value for key, value in data.items()}
 
 
 def normalise_string(s: str) -> str:

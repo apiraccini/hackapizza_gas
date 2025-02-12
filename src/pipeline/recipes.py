@@ -38,6 +38,7 @@ def process_recipes_pipeline(
         all_recipes = ingestion_dict["recipes"]
         all_restaurants = ingestion_dict["restaurants"]
 
+        print("Processing menus")
         all_recipes = process_dataframe(
             data=all_recipes,
             key="recipe_text",
@@ -46,6 +47,7 @@ def process_recipes_pipeline(
             output_model_str=get_model_source("src.datamodels", "RecipeModel"),
         )
 
+        print("Processing restaurants info")
         all_restaurants = process_dataframe(
             data=all_restaurants,
             key="restaurant_text",
