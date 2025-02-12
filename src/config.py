@@ -4,10 +4,10 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = True
+    debug = False
 
     provider = "groq"
-    model = "deepseek-r1-distill-qwen-32b"  # "deepseek-r1-distill-llama-70b", "llama-3.3-70b-versatile"
+    model = "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-qwen-32b", "llama-3.3-70b-versatile"
 
     system_message_template_questions = """
     You are a helpful assistant that parses the request of the user.

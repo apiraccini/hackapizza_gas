@@ -5,7 +5,7 @@ import pandas as pd
 
 from src.config import Config
 from src.utils.llm import get_model_source, process_data
-from src.utils.misc import normalise_strings
+from src.utils.misc import extract_technique_groups, normalise_strings, roman_to_int
 from src.utils.questions import update_planet_keys
 
 
@@ -37,6 +37,17 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
 
         out = update_planet_keys(processed_questions_list, Config.distances_file)
         out = normalise_strings(out)
+
+        for question in out:
+            technique_groups = {"and": [], "or": [], "not": []}
+            for key in ["and", "or", "not"]:
+                techniques = question.get("techniques", {}).get(key, [])
+                technique_groups[key] = extract_technique_groups(techniques)
+            question["technique_groups"] = technique_groups
+
+            if question.get("licences"):
+                required_license = question["licence"]
+                required_license["level"] = roman_to_int(required_license["level"])
 
         with output_file.open("w") as f:
             json.dump(out, f, indent=4)

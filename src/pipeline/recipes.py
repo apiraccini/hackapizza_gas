@@ -5,7 +5,7 @@ from typing import Dict, List
 from src.config import Config
 from src.utils.ingestion import ingest_md_to_json
 from src.utils.llm import get_model_source, process_data
-from src.utils.misc import normalise_strings
+from src.utils.misc import normalise_strings, roman_to_int
 from src.utils.recipes import add_restaurant_info_to_recipes
 
 
@@ -79,6 +79,10 @@ def load_and_process_restaurants(
         )
 
         all_restaurants = normalise_strings(all_restaurants)
+
+        for restaurant in all_restaurants:
+            for license in restaurant.get("chef_licences", []):
+                license["license_level"] = roman_to_int(license["license_level"])
 
         with restaurant_output_path.open("w") as f:
             json.dump(all_restaurants, f, indent=4)

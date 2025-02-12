@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from src.utils.recipes import roman_to_int
+from src.utils.recipes import extract_technique_groups
 
 
 def match_recipes_pipeline(
@@ -41,6 +41,11 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     Returns:
         list: A list of questions with appended matching recipes.
     """
+    for recipe in recipe_data:
+        recipe["recipe_technique_groups"] = extract_technique_groups(
+            recipe.get("recipe_techniques", [])
+        )
+
     for question in question_data:
         matching_recipes = []
 
@@ -49,6 +54,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             for q_key, r_key in [
                 ("ingredients", "recipe_ingredients"),
                 ("techniques", "recipe_techniques"),
+                ("technique_groups", "recipe_technique_groups"),
                 ("restaurants", "recipe_restaurant"),
             ]:
                 if question.get(q_key) and question.get(q_key).get("and"):
@@ -65,6 +71,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             for q_key, r_key in [
                 ("ingredients", "recipe_ingredients"),
                 ("techniques", "recipe_techniques"),
+                ("technique_groups", "recipe_technique_groups"),
                 ("restaurants", "recipe_restaurant"),
             ]:
                 if question.get(q_key) and question.get(q_key).get("or"):
@@ -81,6 +88,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             for q_key, r_key in [
                 ("ingredients", "recipe_ingredients"),
                 ("techniques", "recipe_techniques"),
+                ("technique_groups", "recipe_technique_groups"),
                 ("restaurants", "recipe_restaurant"),
             ]:
                 if question.get(q_key) and question.get(q_key).get("not"):
@@ -106,8 +114,6 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             if question.get("licences"):
                 required_license = question["licence"]
                 chef_licenses = recipe.get("chef_licences", [])
-                for license in chef_licenses:
-                    license["level"] = roman_to_int(license["level"].lower())
                 if not any(
                     license["name"] == required_license["name"]
                     and (
