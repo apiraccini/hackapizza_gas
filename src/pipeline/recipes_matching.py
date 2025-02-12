@@ -107,8 +107,8 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 ("planets_ok", "planet"),
                 ("group_info", "group"),
             ]:
-                if question.get(r_key):
-                    if not any(item in recipe.get(q_key) for item in question[q_key]):
+                if question.get(q_key):
+                    if not any(item in recipe.get(r_key) for item in question[q_key]):
                         skip_recipe = True
                         continue
             if skip_recipe:
