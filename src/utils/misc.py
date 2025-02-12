@@ -31,11 +31,19 @@ def normalise_strings(data: List[Dict]) -> List[Dict]:
         s = s.replace(" ", "_")
         return s
 
+    def normalise_value(value):
+        if isinstance(value, str):
+            return normalise_string(value)
+        elif isinstance(value, dict):
+            return {k: normalise_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [normalise_value(v) for v in value]
+        else:
+            return value
+
     normalised_data = []
     for item in data:
-        normalised_item = {
-            k: normalise_string(v) if isinstance(v, str) else v for k, v in item.items()
-        }
+        normalised_item = {k: normalise_value(v) for k, v in item.items()}
         normalised_data.append(normalised_item)
 
     return normalised_data

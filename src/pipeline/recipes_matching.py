@@ -41,66 +41,58 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     """
 
     for question in question_data:
-        parsed_question = question.get("parsed_question", {})
         matching_recipes = []
-        # matching_recipes_metadata = []
 
         for recipe in recipe_data:
             # Check 'and' conditions
-            for key in [
-                "recipe_ingredients",
-                "recipe_techniques",
-                "recipe_techniques_groups",
-                "recipe_restaurants",
+            for q_key, r_key in [
+                ("ingredients", "recipe_ingredients"),
+                ("techniques", "recipe_techniques"),
+                ("restaurants", "recipe_restaurant"),
             ]:
-                if parsed_question.get(key) and parsed_question.get(key).get("and"):
+                if question.get(q_key) and question.get(q_key).get("and"):
                     if not all(
-                        item in recipe.get(key)
-                        for item in parsed_question[key].get("and", [])
+                        item in recipe.get(r_key)
+                        for item in question[q_key].get("and", [])
                     ):
                         continue
 
             # Check 'or' conditions
-            for key in [
-                "recipe_ingredients",
-                "recipe_techniques",
-                "recipe_techniques_groups",
-                "recipe_restaurants",
+            for q_key, r_key in [
+                ("ingredients", "recipe_ingredients"),
+                ("techniques", "recipe_techniques"),
+                ("restaurants", "recipe_restaurant"),
             ]:
-                if parsed_question.get(key) and parsed_question.get(key).get("or"):
+                if question.get(q_key) and question.get(q_key).get("or"):
                     if not any(
-                        item in recipe.get(key)
-                        for item in parsed_question[key].get("or", [])
+                        item in recipe.get(r_key)
+                        for item in question[q_key].get("or", [])
                     ):
                         continue
 
             # Check 'not' conditions
-            for key in [
-                "recipe_ingredients",
-                "recipe_techniques",
-                "recipe_techniques_groups",
-                "recipe_restaurants",
+            for q_key, r_key in [
+                ("ingredients", "recipe_ingredients"),
+                ("techniques", "recipe_techniques"),
+                ("restaurants", "recipe_restaurant"),
             ]:
-                if parsed_question.get(key) and parsed_question.get(key).get("not"):
+                if question.get(q_key) and question.get(q_key).get("not"):
                     if any(
-                        item in recipe.get(key)
-                        for item in parsed_question[key].get("not", [])
+                        item in recipe.get(r_key)
+                        for item in question[q_key].get("not", [])
                     ):
                         continue
 
             # Additional filters - planets, orders
-            for key1, key2 in [
-                ("planet_info", "planets_ok"),
-                ("group_info", "groups_ok"),
+            for q_key, r_key in [
+                ("planets_ok", "planet"),
+                ("group_info", "group"),
             ]:
-                if parsed_question.get(key2):
-                    if not any(
-                        item in recipe.get(key1) for item in parsed_question[key]
-                    ):
+                if question.get(r_key):
+                    if not any(item in recipe.get(q_key) for item in question[q_key]):
                         continue
 
             matching_recipes.append(recipe.get("recipe_name"))
-            # matching_recipes_metadata.append(recipe)
 
         question["matching_recipes"] = matching_recipes
         # question["matching_recipes_metadata"] = matching_recipes_metadata

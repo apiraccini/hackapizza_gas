@@ -5,6 +5,8 @@ import pandas as pd
 
 from src.config import Config
 from src.utils.llm import get_model_source, process_dataframe
+from src.utils.misc import normalise_strings
+from src.utils.questions import update_planet_keys
 
 
 def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
@@ -35,4 +37,6 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
         with output_file.open("w") as f:
             json.dump(processed_questions_list, f, indent=4)
 
-    return processed_questions_list
+    out = update_planet_keys(processed_questions_list, Config.distances_file)
+
+    return normalise_strings(out)
