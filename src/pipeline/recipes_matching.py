@@ -1,9 +1,8 @@
 import json
-
-# import pdb
-# pdb.set_trace()
 from pathlib import Path
 from typing import Dict, List
+
+from src.utils.recipes import roman_to_int
 
 
 def match_recipes_pipeline(
@@ -107,6 +106,8 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             if question.get("licences"):
                 required_license = question["licence"]
                 chef_licenses = recipe.get("chef_licences", [])
+                for license in chef_licenses:
+                    license["level"] = roman_to_int(license["level"].lower())
                 if not any(
                     license["name"] == required_license["name"]
                     and (
@@ -116,7 +117,6 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                     )
                     for license in chef_licenses
                 ):
-                    print("It works!")
                     continue
 
             matching_recipes.append(recipe.get("recipe_name"))

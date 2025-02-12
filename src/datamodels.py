@@ -13,7 +13,10 @@ class LicenseModel(BaseModel):
         "Magnetica (Mx)",
         "grado tecnologico LTK",
     ] = Field(default=None, description="Name of the license")
-    level: str = Field(default=None, description="Level of the license")
+    level: int = Field(
+        default=None,
+        description="Level of the license is integer",
+    )
 
 
 class LicenseRequestModel(LicenseModel):
