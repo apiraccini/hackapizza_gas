@@ -41,8 +41,11 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
         for question in out:
             technique_groups = {"and": [], "or": [], "not": []}
             for key in ["and", "or", "not"]:
-                techniques = question.get("techniques", {}).get(key, [])
-                technique_groups[key] = extract_technique_groups(techniques)
+                techniques = question.get("techniques", {})
+                if techniques:
+                    technique_groups[key] = extract_technique_groups(
+                        techniques.get(key, [])
+                    )
             question["technique_groups"] = technique_groups
 
             if question.get("licences"):

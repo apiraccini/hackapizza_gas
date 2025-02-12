@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from src.utils.recipes import extract_technique_groups
+from src.utils.misc import extract_technique_groups
 
 
 def match_recipes_pipeline(

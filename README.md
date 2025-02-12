@@ -81,3 +81,4 @@ To contribute to this project, follow these steps:
 - [ ] recipes - extract quantities for restriced ingredients
 - [ ] restaurants - explore blog posts
 - [ ] filters - on techinques licences (2 questions, galactic code)
+- [ ] Add words difficult to spell in prompts

@@ -82,7 +82,7 @@ def load_and_process_restaurants(
 
         for restaurant in all_restaurants:
             for license in restaurant.get("chef_licences", []):
-                license["license_level"] = roman_to_int(license["license_level"])
+                license["level"] = roman_to_int(license["level"])
 
         with restaurant_output_path.open("w") as f:
             json.dump(all_restaurants, f, indent=4)

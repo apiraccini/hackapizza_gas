@@ -54,7 +54,7 @@ def normalise_string(s: str) -> str:
     return s
 
 
-def extract_technique_groups(techniques: List[str]) -> List[str]:
+def extract_technique_groups(techniques: List[str] | None) -> List[str]:
     """
     Extracts macro categories from techniques.
     Args:
@@ -62,6 +62,9 @@ def extract_technique_groups(techniques: List[str]) -> List[str]:
     Returns:
         list: List of technique groups.
     """
+    if techniques is None:
+        return []
+
     technique_groups = {
         "Marinatura": ["marinatura"],
         "Affumicatura": ["affumicatura"],
