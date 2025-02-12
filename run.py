@@ -4,7 +4,7 @@ from src.config import Config
 from src.pipeline.questions import process_questions_pipeline
 from src.pipeline.recipes import process_recipes_pipeline
 from src.pipeline.recipes_matching import match_recipes_pipeline
-from src.utils.misc import get_output_df
+from src.utils.misc import get_output_df, normalise_keys
 
 
 def main():
@@ -26,6 +26,8 @@ def main():
         restaurant_output_path=paths["output_restaurants_path"],
     )
     recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
+
+    recipes_mapping = normalise_keys(recipes_mapping)
 
     # Match recipes with questions
     questions_recipes_mapped = match_recipes_pipeline(
