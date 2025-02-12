@@ -47,3 +47,10 @@ def normalise_strings(data: List[Dict]) -> List[Dict]:
         normalised_data.append(normalised_item)
 
     return normalised_data
+
+
+def normalise_string(s: str) -> str:
+    s = s.lower()
+    s = re.sub(r"\W+", " ", s)
+    s = s.replace(" ", "_")
+    return s
