@@ -82,7 +82,11 @@ def load_and_process_restaurants(
 
         for restaurant in all_restaurants:
             for license in restaurant.get("chef_licences", []):
-                license["level"] = roman_to_int(license["level"])
+                if license.get("level") is not None:
+                    license["level"] = roman_to_int(license["level"])
+                # import pdb
+
+                # pdb.set_trace()
 
         with restaurant_output_path.open("w") as f:
             json.dump(all_restaurants, f, indent=4)
