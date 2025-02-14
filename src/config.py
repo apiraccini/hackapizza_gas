@@ -4,10 +4,10 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = False
+    debug = True
 
     provider = "groq"
-    model = "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-qwen-32b", "llama-3.3-70b-versatile"
+    model = "deepseek-r1-distill-qwen-32b"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile"
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
@@ -36,19 +36,19 @@ class Config:
     
     - conditions on techniques and ingredients
     <user> : "Quali piatti utilizzano la Polvere di Crononite e la tecnica di Incisione Elettromagnetica Plasmica, ma non impiegano la Decostruzione Atomica a Strati Energetici nella loro preparazione?",
-    <assistant> : {
-        "ingredients": {
+    <assistant> : {{
+        "ingredients": {{
             "and": ["Polvere di Crononite"],
             "or": null,
             "or_length": null,
             "not": null
-        },
-        "techniques": {
+        }},
+        "techniques": {{
             "and": ["Incisione Elettromagnetica Plasmica"],
             "or": null,
             "or_length": null,
             "not": ["Decostruzione Atomica a Strati Energetici"]
-        },
+        }},
         "restaurants": null,
         "group": null,
         "licence_name": null,
@@ -57,21 +57,22 @@ class Config:
         "planet": [],
         "planet_distance": null,
         "galactic_code": [],
-        "technique_groups": {
+        "technique_groups": {{
             "and": [],
             "or": [],
             "not": []
-        }
+        }}
+    }}
 
     - "at least" condition on ingredients or techniques
     <user> : "Quali piatti contengono almeno 2 ingredienti tra Polvere di Crononite, Nduja Fritta Tanto, Spezie di Melange e Polvere di Stelle?",
-    <assistant> : {
-        "ingredients": {
+    <assistant> : {{
+        "ingredients": {{
             "and": null,
             "or": ["Polvere di Crononite", "Nduja Fritta Tanto", "Spezie di Melange","Polvere di Stelle"],
             "or_length": 2,
             "not": null
-        },
+        }},
         "techniques": null,
         "restaurants": null,
         "group": null,
@@ -81,15 +82,16 @@ class Config:
         "planet": [],
         "planet_distance": null,
         "galactic_code": [],
-        "technique_groups": {
+        "technique_groups": {{
             "and": [],
             "or": [],
             "not": []
-        }
+        }}
+    }}
 
     - planets and licences
     <user> : "Quali piatti, preparati in un ristorante su Asgard, richiedono la licenza LTK non base e utilizzano Carne di Xenodonte?",
-    <assistant> : {
+    <assistant> : {{
         "ingredients": null,
         "techniques": null,
         "restaurants": null,
@@ -100,11 +102,12 @@ class Config:
         "planet": ["Asgard"],
         "planet_distance": null,
         "galactic_code": [],
-        "technique_groups": {
+        "technique_groups": {{
             "and": [],
             "or": [],
             "not": []
-        }
+        }}
+    }}
     """
     message_template_questions = """
     This is the client request: {request}.

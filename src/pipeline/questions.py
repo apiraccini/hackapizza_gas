@@ -1,11 +1,24 @@
 import json
 from pathlib import Path
+from typing import Dict, List
 
 import pandas as pd
 
 from src.config import Config
 from src.utils.llm import get_model_source, process_data
-from src.utils.misc import extract_technique_groups, normalise_strings, roman_to_int
+from src.utils.lookup_lists import (
+    license_names,
+    planets_names,
+    restaurant_names,
+    technique_groups_names,
+    technique_names,
+)
+from src.utils.misc import (
+    clean_data,
+    extract_technique_groups,
+    normalise_strings,
+    roman_to_int,
+)
 from src.utils.questions import update_planet_keys
 
 
@@ -35,24 +48,51 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
             output_model_str=get_model_source("src.datamodels", "RequestModel"),
         )
 
-        out = update_planet_keys(processed_questions_list, Config.distances_path)
-        out = normalise_strings(out)
-
-        for question in out:
-            technique_groups = {"and": [], "or": [], "not": []}
-            for key in ["and", "or", "not"]:
-                techniques = question.get("techniques", {})
-                if techniques:
-                    technique_groups[key] = extract_technique_groups(
-                        techniques.get(key, [])
-                    )
-            question["technique_groups"] = technique_groups
-
-            if question.get("licences"):
-                required_license = question["licence"]
-                required_license["level"] = roman_to_int(required_license["level"])
+        out = postprocess_results(processed_questions_list)
 
         with output_file.open("w") as f:
             json.dump(out, f, indent=4)
+
+    return out
+
+
+def postprocess_results(question_data: List[Dict]) -> List[Dict]:
+    """
+    Post-processes the questions results.
+
+    Args:
+        question_data (list): List of questions.
+
+    Returns:
+        list: A list of post-processed questions.
+    """
+
+    out = update_planet_keys(question_data, Config.distances_path)
+    out = normalise_strings(out)
+
+    for question in out:
+        technique_groups = {"and": [], "or": [], "not": []}
+        for key in ["and", "or", "not"]:
+            techniques = question.get("techniques", {})
+            if techniques:
+                technique_groups[key] = extract_technique_groups(
+                    techniques.get(key, [])
+                )
+        question["technique_groups"] = technique_groups
+
+        if question.get("licences"):
+            required_license = question["licence"]
+            required_license["level"] = roman_to_int(required_license["level"])
+
+    keys = ["techniques", "techniques_groups", "restaurants", "licence_name", "planet"]
+    mapping_list = [
+        technique_names,
+        technique_groups_names,
+        restaurant_names,
+        license_names,
+        planets_names,
+    ]
+    for key, map in zip(keys, mapping_list):
+        out = clean_data(out, key, map)
 
     return out

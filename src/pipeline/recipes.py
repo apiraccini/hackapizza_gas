@@ -5,7 +5,14 @@ from typing import Dict, List
 from src.config import Config
 from src.utils.ingestion import ingest_md_to_json
 from src.utils.llm import get_model_source, process_data
-from src.utils.misc import normalise_strings, roman_to_int
+from src.utils.lookup_lists import (
+    license_names,
+    planets_names,
+    restaurant_names,
+    technique_groups_names,
+    technique_names,
+)
+from src.utils.misc import clean_data, normalise_strings, roman_to_int
 from src.utils.recipes import add_restaurant_info_to_recipes
 
 
@@ -85,9 +92,6 @@ def load_and_process_restaurants(
                 for license in restaurant.get("chef_licences", []):
                     if license.get("level") is not None:
                         license["level"] = roman_to_int(license["level"])
-                # import pdb
-
-                # pdb.set_trace()
 
         with restaurant_output_path.open("w") as f:
             json.dump(all_restaurants, f, indent=4)
@@ -115,6 +119,23 @@ def process_recipes_pipeline(
     all_restaurants = load_and_process_restaurants(input_path, restaurant_output_path)
 
     all_recipes = add_restaurant_info_to_recipes(all_recipes, all_restaurants)
+
+    keys = [
+        "recipe_techniques",
+        "recipe_techniques_groups",
+        "recipe_restaurant",
+        "chef_licences",
+        "restaurant_planet",
+    ]
+    mapping_list = [
+        technique_names,
+        technique_groups_names,
+        restaurant_names,
+        license_names,
+        planets_names,
+    ]
+    for key, map in zip(keys, mapping_list):
+        all_recipes = clean_data(all_recipes, key, map)
 
     with recipes_output_path.open("w") as f:
         json.dump(all_recipes, f, indent=4)

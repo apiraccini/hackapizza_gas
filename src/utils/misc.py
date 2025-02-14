@@ -21,7 +21,9 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
     def get_most_similar(value: str, mapping_list: List[str]) -> str:
         normalized_value = normalise_string(value)
         normalized_mapping_list = [normalise_string(item) for item in mapping_list]
-        matches = get_close_matches(normalized_value, normalized_mapping_list, n=1)
+        matches = get_close_matches(
+            normalized_value, normalized_mapping_list, n=1, cutoff=0.8
+        )
         return (
             mapping_list[normalized_mapping_list.index(matches[0])]
             if matches
@@ -112,7 +114,7 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
         for technique_group in technique_groups_names:
             normalized_technique_group = normalise_string(technique_group)
             matches = get_close_matches(
-                normalized_techique, normalized_technique_group, n=1
+                normalized_techique, normalized_technique_group, n=1, cutoff=0.8
             )
             if matches:
                 result.add(normalized_technique_group)

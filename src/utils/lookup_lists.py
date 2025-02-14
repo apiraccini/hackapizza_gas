@@ -123,3 +123,16 @@ license_names = [
     "magnetica (Mx)",
     "grado tecnologico LTK",
 ]
+
+planets_names = [
+    "tatooine",
+    "asgard",
+    "namecc",
+    "arrakis",
+    "krypton",
+    "pandora",
+    "cybertron",
+    "ego",
+    "montressosr",
+    "klyntar",
+]

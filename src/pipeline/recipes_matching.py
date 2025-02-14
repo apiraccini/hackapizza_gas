@@ -2,12 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from src.utils.lookup_lists import (
-    restaurant_names,
-    technique_groups_names,
-    technique_names,
-)
-from src.utils.misc import clean_data, extract_technique_groups
+from src.utils.misc import extract_technique_groups
 
 
 def match_recipes_pipeline(
@@ -32,31 +27,9 @@ def match_recipes_pipeline(
         with output_file.open("r") as f:
             questions_recipes_mapped = json.load(f)
     else:
-        # Clean data
-        question_keys = [
-            "techniques",
-            "techniques_groups",
-            "restaurants",
-            "licence_name",
-        ]
-        recipe_keys = [
-            "recipe_techniques",
-            "recipe_techniques_groups",
-            "recipe_restaurant",
-            "chef_licences",
-        ]
-        mapping_list = [technique_names, technique_groups_names, restaurant_names]
-        for q_key, r_key, map in zip(question_keys, recipe_keys, mapping_list):
-            questions_data = clean_data(recipes_data, q_key, map)
-            recipes_data = clean_data(questions_data, r_key, map)
-
-        # Match recipes
         questions_recipes = match_recipes(recipes_data, questions_data)
-
-        # Map dishes
         questions_recipes_mapped = map_dishes(questions_recipes, mapping)
 
-        # Save to file
         with output_file.open("w") as f:
             json.dump(questions_recipes_mapped, f, indent=4)
 
