@@ -81,9 +81,10 @@ def load_and_process_restaurants(
         all_restaurants = normalise_strings(all_restaurants)
 
         for restaurant in all_restaurants:
-            for license in restaurant.get("chef_licences", []):
-                if license.get("level") is not None:
-                    license["level"] = roman_to_int(license["level"])
+            if restaurant.get("chef_licences"):
+                for license in restaurant.get("chef_licences", []):
+                    if license.get("level") is not None:
+                        license["level"] = roman_to_int(license["level"])
                 # import pdb
 
                 # pdb.set_trace()
