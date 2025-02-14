@@ -70,7 +70,7 @@ To contribute to this project, follow these steps:
 
 ## TODO
 
-- [ ] datamodels - think about how to handle the situation 'ingredients or techinques' 
+- [x] datamodels - think about how to handle the situation 'ingredients or techinques' 
 - [x] datamodels - add list of known values when applicable (restaurants, planets)
 - [x] markdown - fix markdown files
 - [x] restaurants - extract and process restaurant descriptions and licences
@@ -78,7 +78,10 @@ To contribute to this project, follow these steps:
 - [x] filters - on chef licences (galactic code)
 - [x] filters - on groups of appartenence (galactic code)
 - [x] filters - on techinque parent groups (obtain during postprocessing, otherwise it messes up technique extraction)
-- [ ] recipes - extract quantities for restriced ingredients
-- [ ] restaurants - explore blog posts
+- [x] recipes - extract quantities for restriced ingredients
+- [x] restaurants - explore blog posts
+- [ ] sirius cosmo - extract filter from recipe and techinque groups
 - [ ] filters - on techinques licences (2 questions, galactic code)
-- [ ] Add words difficult to spell in prompts
+- [ ] filters - on restricted ingredients (2 questions)
+- [ ] prompts - add words difficult to spell in prompts, list of restaurants
+- [ ] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)

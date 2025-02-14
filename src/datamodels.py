@@ -3,30 +3,6 @@ from typing import Dict, List, Literal
 from pydantic import BaseModel, Field, conlist
 
 
-class LicenseModel(BaseModel):
-    """A Pydantic model to represent the license information."""
-
-    name: Literal[
-        "Psionica (P)",
-        "Gravitazionale (G)",
-        "Antimateria (e+)",
-        "Magnetica (Mx)",
-        "grado tecnologico LTK",
-    ] = Field(default=None, description="Name of the license")
-    level: int = Field(
-        default=None,
-        description="Level of the license is integer",
-    )
-
-
-class LicenseRequestModel(LicenseModel):
-    """A Pydantic model to represent the license information with condition for requests."""
-
-    condition: Literal["higher", "equal"] = Field(
-        default="equal", description="Condition for the license level"
-    )
-
-
 class RequestModel(BaseModel):
     """A Pydantic model to extract and validate the request information from clients."""
 
@@ -86,9 +62,19 @@ class RequestModel(BaseModel):
         default=None,
         description="Desired groups of appartenence for the client",
     )
-    licence: LicenseRequestModel = Field(
+    licence_name: Literal[
+        "Psionica (P)",
+        "Gravitazionale (G)",
+        "Antimateria (e+)",
+        "Magnetica (Mx)",
+        "grado tecnologico LTK",
+    ] = Field(default=None, description="Name of the license")
+    licence_level: int = Field(
         default=None,
-        description="License required for performing the mentioned technique, with name, level, and condition",
+        description="Level of the license is integer",
+    )
+    licence_condition: Literal["higher", "equal"] = Field(
+        default="equal", description="Condition for the license level"
     )
     planets_ok: conlist(
         Literal[
@@ -163,7 +149,26 @@ class RestaurantModel(BaseModel):
         default=None,
         description="Planet of the restaurant",
     )
-    chef_licences: conlist(LicenseModel, min_length=0) = Field(
+    chef_licences: conlist(
+        Dict[
+            Literal[
+                "Psionica (P)",
+                "Gravitazionale (G)",
+                "Antimateria (e+)",
+                "Magnetica (Mx)",
+                "grado tecnologico LTK",
+            ],
+            int,
+        ],
+        min_length=0,
+    ) = Field(
         default=None,
-        description="List of licenses held by the chef",
+        description="List of licenses held by the chef with their levels",
+    )
+    restricted_ingredients: conlist(
+        Dict[str, Dict[str, int]],
+        min_length=0,
+    ) = Field(
+        default=None,
+        description="List of restricted ingredients with their quantities",
     )
