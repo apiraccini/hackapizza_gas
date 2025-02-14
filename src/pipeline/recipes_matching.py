@@ -77,24 +77,27 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 ("restaurants", "recipe_restaurant"),
             ]:
                 if question.get(q_key):
-                    or_conditions = question[q_key].get("or", [])
                     or_length = question[q_key].get("or_length", 1)
-                    if or_conditions:
+                    if question[q_key].get("or"):
                         if recipe.get(r_key) is None:
                             continue
                         else:
-                            if (
-                                len(
-                                    [
-                                        item
-                                        for item in or_conditions
-                                        if item in recipe.get(r_key, ["error"])
-                                    ]
-                                )
-                                < or_length
-                            ):
-                                skip_recipe = True
-                                continue
+                            if or_length is not None:
+                                if (
+                                    len(
+                                        [
+                                            item
+                                            for item in question[q_key].get("or")
+                                            if item in recipe.get(r_key, ["error"])
+                                        ]
+                                    )
+                                    < or_length
+                                ):
+                                    # import pdb
+
+                                    # pdb.set_trace()
+                                    skip_recipe = True
+                                    continue
 
             # Check 'not' conditions
             for q_key, r_key in [
@@ -131,19 +134,20 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 required_license_name = question["licence_name"]
                 required_license_level = question["licence_level"]
                 required_license_condition = question["licence_condition"]
-                chef_licenses = recipe.get("chef_licences", [])
-                if not any(
-                    license_name == required_license_name
-                    and (
-                        license_level >= required_license_level
-                        if required_license_condition == "higher"
-                        else license_level == required_license_level
-                    )
-                    for license in chef_licenses
-                    for license_name, license_level in license.items()
-                ):
-                    skip_recipe = True
-                    continue
+                if recipe.get("chef_licences"):
+                    chef_licenses = recipe.get("chef_licences", [])
+                    if not any(
+                        license_name == required_license_name
+                        and (
+                            license_level >= required_license_level
+                            if required_license_condition == "higher"
+                            else license_level == required_license_level
+                        )
+                        for license in chef_licenses
+                        for license_name, license_level in license.items()
+                    ):
+                        skip_recipe = True
+                        continue
 
             if skip_recipe:
                 continue
