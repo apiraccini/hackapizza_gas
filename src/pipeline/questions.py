@@ -35,7 +35,7 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
             output_model_str=get_model_source("src.datamodels", "RequestModel"),
         )
 
-        out = update_planet_keys(processed_questions_list, Config.distances_file)
+        out = update_planet_keys(processed_questions_list, Config.distances_path)
         out = normalise_strings(out)
 
         for question in out:

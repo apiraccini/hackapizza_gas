@@ -4,6 +4,8 @@ from typing import Dict, List
 
 import pandas as pd
 
+from .lookup_lists import technique_groups_names
+
 
 def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List[Dict]:
     """
@@ -104,28 +106,16 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
     if techniques is None:
         return []
 
-    technique_groups = {
-        "Marinatura": ["marinatura"],
-        "Affumicatura": ["affumicatura"],
-        "Fermentazione": ["fermentazione"],
-        "Decostruzione": ["decostruzione"],
-        "Sferificazione": ["sferificazione"],
-        "Tecniche di taglio": ["taglio"],
-        "Tecniche di impasto": ["impasto"],
-        "Surgelamento": ["surgelamento"],
-        "Bollitura": ["bollitura"],
-        "Grigliatura": ["grigliatura"],
-        "Cottura al Forno": ["forno"],
-        "Cottura al vapore": ["vapore"],
-        "Cottura sottovuoto": ["sottovuoto"],
-        "Cottura al Salto": ["salto"],
-    }
-
     result = set()
     for technique in techniques:
-        for group, keywords in technique_groups.items():
-            if any(keyword in technique.lower() for keyword in keywords):
-                result.add(group)
+        normalized_techique = normalise_string(technique)
+        for technique_group in technique_groups_names:
+            normalized_technique_group = normalise_string(technique_group)
+            matches = get_close_matches(
+                normalized_techique, normalized_technique_group, n=1
+            )
+            if matches:
+                result.add(normalized_technique_group)
                 break
     return list(result)
 

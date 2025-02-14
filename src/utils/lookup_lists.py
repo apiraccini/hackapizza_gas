@@ -45,7 +45,7 @@ technique_names = [
     "idro-cristallizzazione sonora quantistica",
     "grigliatura a energia stellare div",
     "grigliatura plasma sintetico risonante",
-    "grigliatura eletro-molecolare a spaziatura variabile",
+    "grigliatura elettro-molecolare a spaziatura variabile",
     "grigliatura tachionica refrattaria",
     "grigliatura psionica dinamica ritmica",
     "cottura al forno con paradosso temporale cronospeculare",
@@ -114,4 +114,12 @@ restaurant_names = [
     "stelle dell infinito celestiale",
     "tutti a tarsvola",
     "universo gastronomico di namecc",
+]
+
+license_names = [
+    "psionica (P)",
+    "gravitazionale (G)",
+    "antimateria (e+)",
+    "magnetica (Mx)",
+    "grado tecnologico LTK",
 ]

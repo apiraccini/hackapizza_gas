@@ -36,8 +36,8 @@ def load_and_process_recipes(
         all_recipes = process_data(
             data=all_recipes,
             key="recipe_text",
-            system_message_template=Config.system_message_template_dish_recipe,
-            message_template=Config.message_template_dish_recipe,
+            system_message_template=Config.system_message_template_recipes,
+            message_template=Config.message_template_recipes,
             output_model_str=get_model_source("src.datamodels", "RecipeModel"),
         )
 
@@ -73,8 +73,8 @@ def load_and_process_restaurants(
         all_restaurants = process_data(
             data=all_restaurants,
             key="restaurant_text",
-            system_message_template=Config.system_message_template_restaurant_recipe,
-            message_template=Config.message_template_restaurant_recipe,
+            system_message_template=Config.system_message_template_restaurant,
+            message_template=Config.message_template_restaurant,
             output_model_str=get_model_source("src.datamodels", "RestaurantModel"),
         )
 

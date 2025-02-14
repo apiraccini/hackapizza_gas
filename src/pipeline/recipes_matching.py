@@ -33,11 +33,17 @@ def match_recipes_pipeline(
             questions_recipes_mapped = json.load(f)
     else:
         # Clean data
-        question_keys = ["techniques", "techniques_groups", "restaurants"]
+        question_keys = [
+            "techniques",
+            "techniques_groups",
+            "restaurants",
+            "licence_name",
+        ]
         recipe_keys = [
             "recipe_techniques",
             "recipe_techniques_groups",
             "recipe_restaurant",
+            "chef_licences",
         ]
         mapping_list = [technique_names, technique_groups_names, restaurant_names]
         for q_key, r_key, map in zip(question_keys, recipe_keys, mapping_list):
@@ -138,7 +144,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
 
             # Additional filters - planets, orders
             for q_key, r_key in [
-                ("planets_ok", "restaurant_planet"),
+                ("planet", "restaurant_planet"),
                 ("group", "group"),
             ]:
                 if question.get(q_key) and recipe.get(r_key):

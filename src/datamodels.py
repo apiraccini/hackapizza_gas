@@ -76,7 +76,7 @@ class RequestModel(BaseModel):
     licence_condition: Literal["higher", "equal"] = Field(
         default="equal", description="Condition for the license level"
     )
-    planets_ok: conlist(
+    planet: conlist(
         Literal[
             "Tatooine",
             "Asgard",
@@ -94,7 +94,7 @@ class RequestModel(BaseModel):
         default=None,
         description="List of desired planets",
     )
-    planets_distance: int = Field(
+    planet_distance: int = Field(
         default=None,
         description="Distance in light years from the desired planet",
     )
