@@ -1,7 +1,46 @@
 import re
+from difflib import get_close_matches
 from typing import Dict, List
 
 import pandas as pd
+
+
+def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List[Dict]:
+    """
+    Cleans the data list by updating values with the most similar string from the mapping list.
+    Args:
+        data_list (list): List of dictionaries containing the data.
+        key (str): Key to process.
+        mapping_list (list): List of strings to map to.
+    Returns:
+        list: Cleaned data list.
+    """
+
+    def get_most_similar(value: str, mapping_list: List[str]) -> str:
+        normalized_value = normalise_string(value)
+        normalized_mapping_list = [normalise_string(item) for item in mapping_list]
+        matches = get_close_matches(normalized_value, normalized_mapping_list, n=1)
+        return (
+            mapping_list[normalized_mapping_list.index(matches[0])]
+            if matches
+            else value
+        )
+
+    def clean_value(value):
+        if isinstance(value, str):
+            return get_most_similar(value, mapping_list)
+        elif isinstance(value, dict):
+            return {k: clean_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [clean_value(v) for v in value]
+        else:
+            return value
+
+    for item in data_list:
+        if key in item:
+            item[key] = clean_value(item[key])
+
+    return data_list
 
 
 def get_output_df(data: List[Dict]) -> pd.DataFrame:

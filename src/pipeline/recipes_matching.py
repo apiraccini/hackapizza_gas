@@ -2,7 +2,12 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
-from src.utils.misc import extract_technique_groups
+from src.utils.lookup_lists import (
+    restaurant_names,
+    technique_groups_names,
+    technique_names,
+)
+from src.utils.misc import clean_data, extract_technique_groups
 
 
 def match_recipes_pipeline(
@@ -27,8 +32,25 @@ def match_recipes_pipeline(
         with output_file.open("r") as f:
             questions_recipes_mapped = json.load(f)
     else:
+        # Clean data
+        question_keys = ["techniques", "techniques_groups", "restaurants"]
+        recipe_keys = [
+            "recipe_techniques",
+            "recipe_techniques_groups",
+            "recipe_restaurant",
+        ]
+        mapping_list = [technique_names, technique_groups_names, restaurant_names]
+        for q_key, r_key, map in zip(question_keys, recipe_keys, mapping_list):
+            questions_data = clean_data(recipes_data, q_key, map)
+            recipes_data = clean_data(questions_data, r_key, map)
+
+        # Match recipes
         questions_recipes = match_recipes(recipes_data, questions_data)
+
+        # Map dishes
         questions_recipes_mapped = map_dishes(questions_recipes, mapping)
+
+        # Save to file
         with output_file.open("w") as f:
             json.dump(questions_recipes_mapped, f, indent=4)
 
@@ -77,27 +99,24 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 ("restaurants", "recipe_restaurant"),
             ]:
                 if question.get(q_key):
+                    or_conditions = question[q_key].get("or", [])
                     or_length = question[q_key].get("or_length", 1)
-                    if question[q_key].get("or"):
+                    if or_conditions:
                         if recipe.get(r_key) is None:
                             continue
                         else:
-                            if or_length is not None:
-                                if (
-                                    len(
-                                        [
-                                            item
-                                            for item in question[q_key].get("or")
-                                            if item in recipe.get(r_key, ["error"])
-                                        ]
-                                    )
-                                    < or_length
-                                ):
-                                    # import pdb
-
-                                    # pdb.set_trace()
-                                    skip_recipe = True
-                                    continue
+                            if (
+                                len(
+                                    [
+                                        item
+                                        for item in or_conditions
+                                        if item in recipe.get(r_key, ["error"])
+                                    ]
+                                )
+                                < or_length
+                            ):
+                                skip_recipe = True
+                                continue
 
             # Check 'not' conditions
             for q_key, r_key in [
@@ -134,20 +153,19 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 required_license_name = question["licence_name"]
                 required_license_level = question["licence_level"]
                 required_license_condition = question["licence_condition"]
-                if recipe.get("chef_licences"):
-                    chef_licenses = recipe.get("chef_licences", [])
-                    if not any(
-                        license_name == required_license_name
-                        and (
-                            license_level >= required_license_level
-                            if required_license_condition == "higher"
-                            else license_level == required_license_level
-                        )
-                        for license in chef_licenses
-                        for license_name, license_level in license.items()
-                    ):
-                        skip_recipe = True
-                        continue
+                chef_licenses = recipe.get("chef_licences", [])
+                if not any(
+                    license_name == required_license_name
+                    and (
+                        license_level >= required_license_level
+                        if required_license_condition == "higher"
+                        else license_level == required_license_level
+                    )
+                    for license in chef_licenses
+                    for license_name, license_level in license.items()
+                ):
+                    skip_recipe = True
+                    continue
 
             if skip_recipe:
                 continue
