@@ -69,19 +69,18 @@ To contribute to this project, follow these steps:
 4. Open a pull request to the `dev` branch.
 
 ## TODO
-
-- [x] datamodels - think about how to handle the situation 'ingredients or techinques' 
+ 
 - [x] datamodels - add list of known values when applicable (restaurants, planets)
 - [x] markdown - fix markdown files
 - [x] restaurants - extract and process restaurant descriptions and licences
 - [x] filters - on planets (handling of distances)
-- [x] filters - on chef licences (galactic code)
-- [x] filters - on groups of appartenence (galactic code)
-- [x] filters - on techinque parent groups (obtain during postprocessing, otherwise it messes up technique extraction)
+- [x] filters - on chef licences (menu)
+- [x] filters - on groups of appartenence (menu)
 - [x] recipes - extract quantities for restriced ingredients
 - [x] restaurants - explore blog posts
-- [ ] sirius cosmo - extract filter from recipe and techinque groups
+- [x] sirius cosmo - filter on techinque groups
 - [ ] filters - on techinques licences (2 questions, galactic code)
 - [ ] filters - on restricted ingredients (2 questions)
-- [x] postproseeing - clean techniques, restaurants, planets, licences using lookup lists
+- [x] postprocessing - clean techniques, restaurants, planets, licences using lookup lists
 - [x] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)
+- [ ] postprocessing - improve lookup lists

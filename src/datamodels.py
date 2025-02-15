@@ -187,7 +187,7 @@ class RestaurantModel(BaseModel):
         description="List of licenses held by the chef with their levels",
     )
     restricted_ingredients: conlist(
-        Dict[str, Dict[str, int]],
+        Dict[str, int],
         min_length=0,
     ) = Field(
         default=None,

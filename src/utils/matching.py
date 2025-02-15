@@ -72,7 +72,6 @@ def check_additional_filters(question, recipe):
 
     # Multiple many to many
     if question["sirius_flag"]:
-        print("jamm")
         for q_key, r_key in [
             ("sirius_techniques_groups", "recipe_technique_groups"),
         ]:

@@ -69,6 +69,9 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     out = update_planet_keys(out, Config.distances_path)
 
     for question in out:
+        if question.get("sirius_flag"):
+            question["techniques"] = {}
+
         for key in [
             "ingredients",
             "techniques",
