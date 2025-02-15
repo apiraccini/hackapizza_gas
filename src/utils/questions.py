@@ -20,7 +20,7 @@ def update_planet_keys(questions: List[Dict], distances_path: Path | str) -> Lis
     distances.index = distances.index.str.lower()
 
     for question in questions:
-        if question.get("planet_distance") is not None:
+        if question.get("planet_distance") and question.get("planet"):
             planet_ok = question.get("planet")[0]
             if planet_ok:
                 question["planet"] = distances[

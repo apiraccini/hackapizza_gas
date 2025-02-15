@@ -93,6 +93,32 @@ class RequestModel(BaseModel):
         default=None,
         description="Distance in light years from the desired planet",
     )
+    sirius_flag: bool = Field(
+        default=None,
+        description="Flag to indicate if the manual 'Sirius Cosmo' (or 'Sirius') is mentioned",
+    )
+    sirius_techniques_groups: conlist(
+        Literal[
+            "marinatura",
+            "affumicatura",
+            "fermentazione",
+            "decostruzione",
+            "sferificazione",
+            "tecniche di taglio",
+            "tecniche di impasto",
+            "surgelamento",
+            "bollitura",
+            "grigliatura",
+            "cottura al forno",
+            "cottura al vapore",
+            "cottura sottovuoto",
+            "cottura al salto",
+        ],
+        min_length=0,
+    ) = Field(
+        default=None,
+        description="List of techniques categories that must be mentioned in the 'Sirius Cosmo' manual if specifically required",
+    )
     galactic_code: conlist(
         Literal["corrette licenze e certificazioni", "quantita legali"], min_length=0
     ) = Field(

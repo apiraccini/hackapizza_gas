@@ -10,11 +10,11 @@ from src.utils.lookup_lists import (
     license_names,
     planets_names,
     restaurant_names,
+    technique_groups_names,
     technique_names,
 )
 from src.utils.misc import (
     clean_data,
-    extract_technique_groups,
     normalise_strings,
     roman_to_int,
 )
@@ -69,21 +69,9 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     out = update_planet_keys(out, Config.distances_path)
 
     for question in out:
-        if "techniques" in question:
-            question_techniques = question["techniques"]
-            question_technique_groups = {}
-            for key in ["and", "or", "not"]:
-                if question_techniques and key in question_techniques:
-                    question_technique_groups[key] = extract_technique_groups(
-                        question_techniques[key]
-                    )
-
-            question["technique_groups"] = question_technique_groups
-
         for key in [
             "ingredients",
             "techniques",
-            "technique_groups",
         ]:
             if (
                 question.get(key)
@@ -95,12 +83,19 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
         if question.get("license_level"):
             question["license_level"] = roman_to_int(question["license_level"])
 
-    keys = ["techniques", "restaurants", "licence_name", "planet"]
+    keys = [
+        "techniques",
+        "restaurants",
+        "licence_name",
+        "planet",
+        "sirius_techniques_groups",
+    ]
     mapping_list = [
         technique_names,
         restaurant_names,
         license_names,
         planets_names,
+        technique_groups_names,
     ]
     for key, map in zip(keys, mapping_list):
         out = clean_data(out, key, map)

@@ -70,6 +70,18 @@ def check_additional_filters(question, recipe):
             if not any(item == recipe.get(r_key) for item in question.get(q_key)):
                 return False
 
+    # Multiple many to many
+    if question["sirius_flag"]:
+        print("jamm")
+        for q_key, r_key in [
+            ("sirius_techniques_groups", "recipe_technique_groups"),
+        ]:
+            if question.get(q_key) and recipe.get(r_key):
+                if not all(
+                    item in recipe.get(r_key, ["error"]) for item in question.get(q_key)
+                ):
+                    return False
+
     # Filter based on licenses
     if question.get("licence_name"):
         required_license_name = question["licence_name"]

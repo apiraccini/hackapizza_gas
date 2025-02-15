@@ -50,7 +50,6 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
     keys = [
         ("ingredients", "recipe_ingredients"),
         ("techniques", "recipe_techniques"),
-        ("technique_groups", "recipe_technique_groups"),
     ]
 
     for question in question_data:
