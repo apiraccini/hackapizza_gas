@@ -24,7 +24,7 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
         matches = get_close_matches(
             normalized_value, normalized_mapping_list, n=1, cutoff=0
         )
-        out = mapping_list[normalized_mapping_list.index(matches[0])]
+        out = matches[0]
         return normalise_string(out)
 
     def clean_value(value):
@@ -108,7 +108,7 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
     if techniques is None:
         return []
 
-    result = set()
+    result = []
     for technique in techniques:
         normalized_techique = normalise_string(technique)
         normalized_technique_groups = [
@@ -119,9 +119,11 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
             normalized_techique, normalized_technique_groups, n=1, cutoff=0
         )
         if matches:
-            result.add(normalized_technique_groups.index(matches[0]))
-            break
-    return list(result)
+            result.append(matches[0])
+        else:
+            result.append("not matched")
+
+    return result
 
 
 def roman_to_int(roman: str | int) -> int:

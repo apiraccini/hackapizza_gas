@@ -4,10 +4,10 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = False
+    debug = True
 
     provider = "groq"
-    model = "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile"
+    model = "gemma2-9b-it"  # "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile"
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")

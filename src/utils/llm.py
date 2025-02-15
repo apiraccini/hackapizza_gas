@@ -6,6 +6,7 @@ from typing import Dict, List
 
 import aisuite as ai
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_fixed
 from tqdm import tqdm
 
 from src.config import Config
@@ -52,11 +53,12 @@ def process_data(
             response = json.loads(response)
             item.update(response)
         except Exception:
-            item["error"] = "Error"
+            continue
 
     return data
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
 def call_llm(
     message,
     sys_message="You are a helpful agent.",

@@ -56,9 +56,12 @@ def load_and_process_recipes(
     all_recipes = normalise_strings(all_recipes)
 
     for recipe in all_recipes:
-        recipe["recipe_technique_groups"] = extract_technique_groups(
-            recipe.get("recipe_techniques", [])
-        )
+        if "recipe_techniques" in recipe:
+            recipe_techniques = recipe["recipe_techniques"]
+            recipe_technique_groups = {}
+
+            recipe_technique_groups = extract_technique_groups(recipe_techniques)
+            recipe["recipe_technique_groups"] = recipe_technique_groups
 
     with recipes_output_path.open("w") as f:
         json.dump(all_recipes, f, indent=4)

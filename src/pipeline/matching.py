@@ -58,7 +58,7 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
 
         for recipe in recipe_data:
             if not check_and_conditions(question, recipe, keys):
-                continue
+                continue  # skip recipe
             if not check_or_conditions(question, recipe, keys):
                 continue
             if not check_not_conditions(question, recipe, keys):

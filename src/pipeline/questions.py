@@ -10,7 +10,6 @@ from src.utils.lookup_lists import (
     license_names,
     planets_names,
     restaurant_names,
-    technique_groups_names,
     technique_names,
 )
 from src.utils.misc import (
@@ -70,14 +69,16 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     out = update_planet_keys(out, Config.distances_path)
 
     for question in out:
-        technique_groups = {"and": [], "or": [], "not": []}
-        for key in ["and", "or", "not"]:
-            techniques = question.get("techniques", {})
-            if techniques:
-                technique_groups[key] = extract_technique_groups(
-                    techniques.get(key, [])
-                )
-        question["technique_groups"] = technique_groups
+        if "techniques" in question:
+            question_techniques = question["techniques"]
+            question_technique_groups = {}
+            for key in ["and", "or", "not"]:
+                if question_techniques and key in question_techniques:
+                    question_technique_groups[key] = extract_technique_groups(
+                        question_techniques[key]
+                    )
+
+            question["technique_groups"] = question_technique_groups
 
         for key in [
             "ingredients",
@@ -94,10 +95,9 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
         if question.get("license_level"):
             question["license_level"] = roman_to_int(question["license_level"])
 
-    keys = ["techniques", "techniques_groups", "restaurants", "licence_name", "planet"]
+    keys = ["techniques", "restaurants", "licence_name", "planet"]
     mapping_list = [
         technique_names,
-        technique_groups_names,
         restaurant_names,
         license_names,
         planets_names,
@@ -105,6 +105,6 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     for key, map in zip(keys, mapping_list):
         out = clean_data(out, key, map)
 
-    out = normalise_strings(question_data)
+    out = normalise_strings(out)
 
     return out

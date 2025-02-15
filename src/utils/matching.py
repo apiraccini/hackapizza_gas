@@ -5,7 +5,7 @@ def check_and_conditions(question, recipe, conditions):
     for q_key, r_key in conditions:
         if question.get(q_key) and question.get(q_key).get("and"):
             if recipe.get(r_key) is None:
-                continue
+                return False
             else:
                 if not all(
                     item in recipe.get(r_key, ["error"])
@@ -21,7 +21,7 @@ def check_or_conditions(question, recipe, conditions):
             or_length = question[q_key].get("or_length", 1)
             if question[q_key].get("or"):
                 if recipe.get(r_key) is None:
-                    continue
+                    return False
                 else:
                     if or_length is not None:
                         if (
@@ -42,7 +42,7 @@ def check_not_conditions(question, recipe, conditions):
     for q_key, r_key in conditions:
         if question.get(q_key) and question.get(q_key).get("not"):
             if recipe.get(r_key) is None:
-                continue
+                return False
             else:
                 if any(
                     item in recipe.get(r_key, ["error"])

@@ -47,7 +47,7 @@ def main():
     df = get_output_df(questions_recipes_mapped)
     df.to_csv(paths["output_result_path"], index=False)
 
-    print("Pipeline completed successfully")
+    # print("Pipeline completed successfully")
 
 
 if __name__ == "__main__":
