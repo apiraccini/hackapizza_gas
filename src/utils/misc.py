@@ -111,14 +111,16 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
     result = set()
     for technique in techniques:
         normalized_techique = normalise_string(technique)
-        for technique_group in technique_groups_names:
-            normalized_technique_group = normalise_string(technique_group)
-            matches = get_close_matches(
-                normalized_techique, normalized_technique_group, n=1, cutoff=0.8
-            )
-            if matches:
-                result.add(normalized_technique_group)
-                break
+        normalized_technique_groups = [
+            normalise_string(technique_group)
+            for technique_group in technique_groups_names
+        ]
+        matches = get_close_matches(
+            normalized_techique, normalized_technique_groups, n=1
+        )
+        if matches:
+            result.add(normalized_technique_groups.index(matches[0]))
+            break
     return list(result)
 
 

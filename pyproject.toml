@@ -8,5 +8,6 @@ dependencies = [
     "aisuite[groq,openai]>=0.1.8",
     "docling>=2.20.0",
     "ipykernel>=6.29.5",
+    "pytest>=8.3.4",
     "python-dotenv>=1.0.1",
 ]

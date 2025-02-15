@@ -1,9 +1,9 @@
 import json
 
 from src.config import Config
+from src.pipeline.matching import match_recipes_pipeline
 from src.pipeline.questions import process_questions_pipeline
 from src.pipeline.recipes import process_recipes_pipeline
-from src.pipeline.recipes_matching import match_recipes_pipeline
 from src.utils.misc import get_output_df, normalise_keys
 
 

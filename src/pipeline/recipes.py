@@ -12,7 +12,12 @@ from src.utils.lookup_lists import (
     technique_groups_names,
     technique_names,
 )
-from src.utils.misc import clean_data, normalise_strings, roman_to_int
+from src.utils.misc import (
+    clean_data,
+    extract_technique_groups,
+    normalise_strings,
+    roman_to_int,
+)
 from src.utils.recipes import add_restaurant_info_to_recipes
 
 
@@ -48,10 +53,22 @@ def load_and_process_recipes(
             output_model_str=get_model_source("src.datamodels", "RecipeModel"),
         )
 
-        all_recipes = normalise_strings(all_recipes)
+    all_recipes = normalise_strings(all_recipes)
 
-        with recipes_output_path.open("w") as f:
-            json.dump(all_recipes, f, indent=4)
+    for recipe in all_recipes:
+        recipe["recipe_technique_groups"] = extract_technique_groups(
+            recipe.get("recipe_techniques", [])
+        )
+        for key in [
+            "recipe_ingredients",
+            "recipe_techniques",
+            "recipe_technique_groups",
+        ]:
+            if recipe.get(key) and len(recipe[key].get("or", [])) == 2:
+                recipe[key]["or_length"] = 1
+
+    with recipes_output_path.open("w") as f:
+        json.dump(all_recipes, f, indent=4)
 
     return all_recipes
 
@@ -85,16 +102,16 @@ def load_and_process_restaurants(
             output_model_str=get_model_source("src.datamodels", "RestaurantModel"),
         )
 
-        all_restaurants = normalise_strings(all_restaurants)
+    all_restaurants = normalise_strings(all_restaurants)
 
-        for restaurant in all_restaurants:
-            if restaurant.get("chef_licences"):
-                for license in restaurant.get("chef_licences", []):
-                    if license.get("level") is not None:
-                        license["level"] = roman_to_int(license["level"])
+    for restaurant in all_restaurants:
+        if restaurant.get("chef_licences"):
+            for license in restaurant.get("chef_licences", []):
+                if license.get("level") is not None:
+                    license["level"] = roman_to_int(license["level"])
 
-        with restaurant_output_path.open("w") as f:
-            json.dump(all_restaurants, f, indent=4)
+    with restaurant_output_path.open("w") as f:
+        json.dump(all_restaurants, f, indent=4)
 
     return all_restaurants
 

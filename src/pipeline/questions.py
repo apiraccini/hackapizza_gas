@@ -36,7 +36,7 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
 
     if output_file.exists():
         with output_file.open("r") as f:
-            out = json.load(f)
+            processed_questions_list = json.load(f)
     else:
         questions_df = pd.read_csv(input_file)
         questions_data = questions_df.to_dict(orient="records")
@@ -48,10 +48,10 @@ def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
             output_model_str=get_model_source("src.datamodels", "RequestModel"),
         )
 
-        out = postprocess_results(processed_questions_list)
+    out = postprocess_results(processed_questions_list)
 
-        with output_file.open("w") as f:
-            json.dump(out, f, indent=4)
+    with output_file.open("w") as f:
+        json.dump(out, f, indent=4)
 
     return out
 
@@ -66,9 +66,8 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     Returns:
         list: A list of post-processed questions.
     """
-
-    out = update_planet_keys(question_data, Config.distances_path)
-    out = normalise_strings(out)
+    out = normalise_strings(question_data)
+    out = update_planet_keys(out, Config.distances_path)
 
     for question in out:
         technique_groups = {"and": [], "or": [], "not": []}
@@ -80,9 +79,8 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
                 )
         question["technique_groups"] = technique_groups
 
-        if question.get("licences"):
-            required_license = question["licence"]
-            required_license["level"] = roman_to_int(required_license["level"])
+        if question.get("license_level"):
+            question["license_level"] = roman_to_int(question["license_level"])
 
     keys = ["techniques", "techniques_groups", "restaurants", "licence_name", "planet"]
     mapping_list = [

@@ -16,13 +16,15 @@ def update_planet_keys(questions: List[Dict], distances_path: Path | str) -> Lis
     distances = pd.read_csv(distances_path)
     distances.index = distances["/"]
     distances = distances.drop(columns="/")
+    distances.columns = distances.columns.str.lower()
+    distances.index = distances.index.str.lower()
 
     for question in questions:
         if question.get("planet_distance") is not None:
             planet_ok = question.get("planet")[0]
             if planet_ok:
                 question["planet"] = distances[
-                    distances[f"{planet_ok}"] < question["planet_distance"]
+                    distances[f"{planet_ok.lower()}"] < question["planet_distance"]
                 ].index.tolist()
 
     return questions

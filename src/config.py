@@ -4,10 +4,10 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = True
+    debug = False
 
     provider = "groq"
-    model = "deepseek-r1-distill-qwen-32b"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile"
+    model = "deepseek-r1-distill-llama-70b"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile"
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
@@ -32,6 +32,18 @@ class Config:
     In this case, the users will be clients of a restaurant that want to know which dishes satisfy their requirements.
     You must extract the information using the pydantic model below and return a JSON format.\n\n{output_model_str}
     
+    With regards to the required licence, this is che complete list:
+    - "licenza pisonica (P)"
+    - "licenza temporale (t)"
+    - "licenza gravitazionale (G)"
+    - "licenza antimateria (e+)"
+    - "licenza magnetica (Mx)"
+    - "licenza quantica (Q)"
+    - "licenza luce (C)"
+    - "licenza tecnologica LTK"
+    The licence level is specified as a roman numeral, except for the "licenza magnetica" which is specified as a number.
+    If licences are mentioned in the text, there might be either the name (e.g "licenza pisonica") or the abbreviation (e.g licenza "P"), always report the full name.
+
     Here are some few shot examples for tricky cases:
     
     - conditions on techniques and ingredients
@@ -136,6 +148,18 @@ class Config:
     system_message_template_restaurant = """
     You are a helpful assistant that receive a text containing information about a restaurant as input.
     You must extract the information using the pydantic model below and return a JSON format.\n\n{output_model_str}
+
+    With regards to chef licences, this is che complete list:
+    - "licenza pisonica (P)"
+    - "licenza temporale (t)"
+    - "licenza gravitazionale (G)"
+    - "licenza antimateria (e+)"
+    - "licenza magnetica (Mx)"
+    - "licenza quantica (Q)"
+    - "licenza luce (C)"
+    - "licenza tecnologica LTK"
+    The licence level is specified as a roman numeral, except for the "licenza magnetica" which is specified as a number.
+    If licences are mentioned in the text, there might be either the name (e.g "licenza pisonica") or the abbreviation (e.g licenza "P"), always report the full name.
     """
     message_template_restaurant = """
     This is the text containing information about the restaurant: {request}.

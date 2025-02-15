@@ -117,11 +117,14 @@ restaurant_names = [
 ]
 
 license_names = [
-    "psionica (P)",
-    "gravitazionale (G)",
-    "antimateria (e+)",
-    "magnetica (Mx)",
-    "grado tecnologico LTK",
+    "licenza psionica (P)",
+    "licenza temporale (t)",
+    "licenza gravitazionale (G)",
+    "licenza antimateria (e+)",
+    "licenza magnetica (Mx)",
+    "licenza quantica (Q)",
+    "licenza luce (C)",
+    "licenza tecnologica LTK",
 ]
 
 planets_names = [

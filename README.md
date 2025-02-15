@@ -83,5 +83,5 @@ To contribute to this project, follow these steps:
 - [ ] sirius cosmo - extract filter from recipe and techinque groups
 - [ ] filters - on techinques licences (2 questions, galactic code)
 - [ ] filters - on restricted ingredients (2 questions)
-- [ ] prompts - add words difficult to spell in prompts, list of restaurants
-- [ ] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)
+- [x] postproseeing - clean techniques, restaurants, planets, licences using lookup lists
+- [x] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)
