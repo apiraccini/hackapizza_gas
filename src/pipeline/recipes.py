@@ -59,13 +59,6 @@ def load_and_process_recipes(
         recipe["recipe_technique_groups"] = extract_technique_groups(
             recipe.get("recipe_techniques", [])
         )
-        for key in [
-            "recipe_ingredients",
-            "recipe_techniques",
-            "recipe_technique_groups",
-        ]:
-            if recipe.get(key) and len(recipe[key].get("or", [])) == 2:
-                recipe[key]["or_length"] = 1
 
     with recipes_output_path.open("w") as f:
         json.dump(all_recipes, f, indent=4)

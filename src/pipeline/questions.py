@@ -79,6 +79,18 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
                 )
         question["technique_groups"] = technique_groups
 
+        for key in [
+            "ingredients",
+            "techniques",
+            "technique_groups",
+        ]:
+            if (
+                question.get(key)
+                and question[key].get("or")
+                and len(question[key].get("or")) == 2
+            ):
+                question[key]["or_length"] = 1
+
         if question.get("license_level"):
             question["license_level"] = roman_to_int(question["license_level"])
 
@@ -92,5 +104,7 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     ]
     for key, map in zip(keys, mapping_list):
         out = clean_data(out, key, map)
+
+    out = normalise_strings(question_data)
 
     return out

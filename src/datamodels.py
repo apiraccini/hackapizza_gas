@@ -72,7 +72,7 @@ class RequestModel(BaseModel):
         description="Level of the license",
     )
     licence_condition: Literal["higher", "equal"] = Field(
-        default="equal", description="Condition for the license level"
+        default=None, description="Condition for the license level"
     )
     planet: Literal[
         "Tatooine",

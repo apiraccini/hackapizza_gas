@@ -22,13 +22,10 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
         normalized_value = normalise_string(value)
         normalized_mapping_list = [normalise_string(item) for item in mapping_list]
         matches = get_close_matches(
-            normalized_value, normalized_mapping_list, n=1, cutoff=0.8
+            normalized_value, normalized_mapping_list, n=1, cutoff=0
         )
-        return (
-            mapping_list[normalized_mapping_list.index(matches[0])]
-            if matches
-            else value
-        )
+        out = mapping_list[normalized_mapping_list.index(matches[0])]
+        return normalise_string(out)
 
     def clean_value(value):
         if isinstance(value, str):
@@ -40,11 +37,14 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
         else:
             return value
 
+    cleaned_data_list = []
     for item in data_list:
-        if key in item:
-            item[key] = clean_value(item[key])
+        new_item = item.copy()
+        if key in new_item:
+            new_item[key] = clean_value(new_item[key])
+        cleaned_data_list.append(new_item)
 
-    return data_list
+    return cleaned_data_list
 
 
 def get_output_df(data: List[Dict]) -> pd.DataFrame:
@@ -93,7 +93,7 @@ def normalise_keys(data: dict) -> dict:
 def normalise_string(s: str) -> str:
     s = s.lower()
     s = re.sub(r"\W+", " ", s)
-    s = s.replace(" ", "_")
+    s = re.sub(r"\s+", "_", s)
     return s
 
 
@@ -116,7 +116,7 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
             for technique_group in technique_groups_names
         ]
         matches = get_close_matches(
-            normalized_techique, normalized_technique_groups, n=1
+            normalized_techique, normalized_technique_groups, n=1, cutoff=0
         )
         if matches:
             result.add(normalized_technique_groups.index(matches[0]))

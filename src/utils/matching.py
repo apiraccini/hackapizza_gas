@@ -83,6 +83,7 @@ def check_additional_filters(question, recipe):
             return False
 
     if question.get("licence_level") and question.get("licence_condition"):
+        chef_licenses = recipe.get("chef_licences", [])
         required_license_level = question["licence_level"]
         required_license_condition = question["licence_condition"]
 
