@@ -126,7 +126,7 @@ def check_additional_filters(question, recipe):
                 quantity = restricted.get("quantity")
                 if (
                     ingredient in illegal_ingredients
-                    and quantity > illegal_ingredients[ingredient]
+                    and int(quantity) > illegal_ingredients[ingredient]
                 ):
                     return False
 

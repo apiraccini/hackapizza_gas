@@ -185,28 +185,11 @@ class RestaurantModel(BaseModel):
     )
     restricted_ingredients: conlist(
         Dict[
+            Literal["recipe", "quantity", "ingredient"],
             str,
-            Literal[
-                "Erba Pipa",
-                "Cristalli di Memoria",
-                "Petali di Eco",
-                "Carne di Drago",
-                "Uova di Fenice",
-                "Lacrime di Unicorno",
-                "Foglie di Mandragora",
-                "Muffa Lunare",
-                "Nettare di Sirena",
-                "Spore Quantiche",
-                "Essenza di Vuoto",
-                "Funghi dell Etere",
-                "Sale Temporale",
-                "Radici di Gravita",
-                "Polvere di Stelle",
-            ],
-            int,
         ],
         min_length=0,
     ) = Field(
         default=None,
-        description="List of dictionaries with keys 'recipe', 'ingrendient' and 'quantity' to indicate the restricted ingredients",
+        description="""List of dictionaries with keys 'recipe', 'ingrendient' and 'quantity' to indicate the restricted ingredients. Ingredients must be one of: one of 'Erba Pipa', 'Cristalli di Memoria', 'Petali di Eco','Carne di Drago','Uova di Fenice','Lacrime di Unicorno','Foglie di Mandragora','Muffa Lunare','Nettare di Sirena','Spore Quantiche','Essenza di Vuoto','Funghi dell Etere,'Sale Temporale,'Radici di Gravita,'Polvere di Stelle'""",
     )
