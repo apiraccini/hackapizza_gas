@@ -142,7 +142,7 @@ class RecipeModel(BaseModel):
         "Ordine degli Armonisti",
     ] = Field(
         default=None,
-        description="Group of people that can eat that recipe (if specifically mentioned)",
+        description="Group of people that can eat that recipe (if specifically mentioned). This field is not null only if there is a string like '!! Questo piatto va bene per gli appartenenti all'<recipe_group>!!' in the original text",
     )
 
 
