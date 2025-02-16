@@ -23,7 +23,8 @@ class Config:
         "output_result_json": data_path / "result.json",
         "output_result_path": data_path / "result.csv",
     }
-    distances_path = "data/raw/Misc/Distanze.csv"
+    distances_path = Path("data/raw/Misc/Distanze.csv")
+    illegal_ingredients_path = Path("data/raw/illegal_ingredients.csv")
 
     # prompt templates
     # questions

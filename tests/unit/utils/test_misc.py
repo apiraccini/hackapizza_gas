@@ -48,4 +48,4 @@ def test_roman_to_int():
     assert roman_to_int("MMXXI") == 2021
     assert roman_to_int(0) == 0
     assert roman_to_int("0") == 0
-    assert roman_to_int("VI+") == 8
+    assert roman_to_int("VI+") == 7

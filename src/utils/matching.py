@@ -2,6 +2,8 @@ import csv
 
 import pandas as pd
 
+from src.config import Config
+
 from .misc import roman_to_int
 
 
@@ -68,14 +70,14 @@ def check_not_conditions(question, recipe, conditions):
 def check_additional_filters(question, recipe):
     # Filters based on groups, restaurant - single match 1 to 1
     for q_key, r_key in [
-        ("group", "recipe_group"),
+        ("group", "recipe_group"),  # TODO: fix groups
         ("restaurants", "recipe_restaurant"),
     ]:
         if question.get(q_key) and recipe.get(r_key):
             if question.get(q_key) != recipe.get(r_key):
                 return False
 
-    # Filtersa based on planet - multiple many to 1
+    # Filters based on planet - multiple many to 1
     for q_key, r_key in [
         ("planet", "restaurant_planet"),
     ]:
@@ -100,6 +102,43 @@ def check_additional_filters(question, recipe):
     required_license_condition = question.get("licence_condition")
     chef_licenses = recipe.get("chef_licences", {})
 
+    if not check_license_conditions(
+        required_license_name,
+        required_license_level,
+        required_license_condition,
+        chef_licenses,
+    ):
+        return False
+
+    # Filter based on galactic code
+    if "quantita legali" in question.get("galactic_code", []):
+        illegal_ingredients_df = pd.read_csv(Config.illegal_ingredients_path)
+        illegal_ingredients = dict(
+            zip(
+                illegal_ingredients_df["substance"],
+                illegal_ingredients_df["volume_limit_perc"],
+            )
+        )
+        recipe_name = recipe.get("recipe_name")
+        for restricted in recipe.get("restricted_ingredients", []):
+            if restricted.get("recipe") == recipe_name:
+                ingredient = restricted.get("ingredient")
+                quantity = restricted.get("quantity")
+                if (
+                    ingredient in illegal_ingredients
+                    and quantity > illegal_ingredients[ingredient]
+                ):
+                    return False
+
+    return True
+
+
+def check_license_conditions(
+    required_license_name,
+    required_license_level,
+    required_license_condition,
+    chef_licenses,
+):
     if (
         required_license_name
         and not required_license_level
@@ -114,7 +153,7 @@ def check_additional_filters(question, recipe):
         and not required_license_name
     ):
         if required_license_condition == "higher":
-            if not any(
+            if not all(
                 roman_to_int(license_level) >= roman_to_int(required_license_level)
                 for license_level in chef_licenses.values()
             ):
@@ -129,29 +168,12 @@ def check_additional_filters(question, recipe):
     if required_license_name and required_license_level and required_license_condition:
         if required_license_name not in chef_licenses:
             return False
-            chef_license_level = chef_licenses[required_license_name]
+        chef_license_level = chef_licenses[required_license_name]
         if required_license_condition == "higher":
             if roman_to_int(chef_license_level) < roman_to_int(required_license_level):
                 return False
         elif required_license_condition == "equal":
             if roman_to_int(chef_license_level) != roman_to_int(required_license_level):
                 return False
-
-    # Filter based on galactic code
-    if "quantita legali" in question.get("galactic_code", []):
-        illegal_ingredients_df = pd.read_csv("/path/to/illegal_ingredients.csv")
-        illegal_ingredients = dict(
-            zip(illegal_ingredients_df["ingredient"], illegal_ingredients_df["volume"])
-        )
-        recipe_name = recipe.get("recipe_name")
-        for restricted in recipe.get("restricted_ingredients", []):
-            if restricted.get("recipe") == recipe_name:
-                ingredient = restricted.get("ingredient")
-                quantity = restricted.get("quantity")
-                if (
-                    ingredient in illegal_ingredients
-                    and quantity > illegal_ingredients[ingredient]
-                ):
-                    return False
 
     return True
