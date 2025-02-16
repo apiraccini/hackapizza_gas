@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 from src.utils.matching import (
@@ -17,7 +18,7 @@ def sample_data():
         "group": "groupA",
         "restaurants": "restaurant1",
         "planet": ["planet1", "planet2"],
-        "licence_name": "basic",
+        "licence_name": "licenza psionica (P)",
         "licence_level": "II",
         "licence_condition": "higher",
     }
@@ -32,18 +33,26 @@ def sample_data():
         "group": "groupA",
         "restaurants": "restaurant1",
         "planet": ["planet1"],
-        "licence_name": "basic",
+        "licence_name": "licenza psionica (P)",
         "licence_level": "II",
         "licence_condition": "higher",
     }
     recipe = {
+        "recipe_name": "recipe1",
         "recipe_ingredients": ["tomato", "cheese", "basil"],
         "recipe_techniques": ["baking", "grilling"],
         "recipe_technique_groups": ["group1", "group2"],
         "recipe_group": "groupA",
         "recipe_restaurant": "restaurant1",
         "restaurant_planet": "planet1",
-        "chef_licences": [{"basic": "II"}],
+        "chef_licences": {
+            "licenza psionica (P)": "II",
+            "licenza quantica (Q)": "III",
+        },
+        "restricted_ingredients": [
+            {"recipe": "recipe1", "ingredient": "Erba Pipa", "quantity": 5},
+            {"recipe": "recipe1", "ingredient": "Cristalli di Memoria", "quantity": 6},
+        ],
     }
     return question_and, question_or, recipe
 
@@ -94,3 +103,95 @@ def test_check_additional_filters(sample_data):
     question_and, question_or, recipe = sample_data
     assert check_additional_filters(question_and, recipe)
     assert check_additional_filters(question_or, recipe)
+
+
+def test_check_additional_filters_with_galactic_code(sample_data, monkeypatch):
+    question_and, question_or, recipe = sample_data
+    question_and["galactic_code"] = ["quantita legali"]
+
+    def mock_read_csv(filepath):
+        return pd.DataFrame(
+            {"ingredient": ["Erba Pipa", "Cristalli di Memoria"], "volume": [10, 5]}
+        )
+
+    monkeypatch.setattr(pd, "read_csv", mock_read_csv)
+
+    assert not check_additional_filters(question_and, recipe)
+
+    recipe["restricted_ingredients"] = [
+        {"recipe": "recipe1", "ingredient": "Erba Pipa", "quantity": 5},
+        {"recipe": "recipe1", "ingredient": "Cristalli di Memoria", "quantity": 4},
+    ]
+    assert check_additional_filters(question_and, recipe)
+
+
+def test_check_additional_filters_with_licence(sample_data):
+    question_and, question_or, recipe = sample_data
+
+    # Test only licence_name
+    question_and["licence_name"] = "licenza psionica (P)"
+    del question_and["licence_level"]
+    del question_and["licence_condition"]
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "II",
+        "licenza quantica (Q)": "III",
+    }
+    assert check_additional_filters(question_and, recipe)
+
+    recipe["chef_licences"] = {
+        "licenza quantica (Q)": "III",
+    }
+    assert not check_additional_filters(question_and, recipe)
+
+    # Test only licence_level and licence_condition
+    del question_and["licence_name"]
+    question_and["licence_level"] = "III"
+    question_and["licence_condition"] = "higher"
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "III",
+        "licenza quantica (Q)": "IV",
+    }
+    assert check_additional_filters(question_and, recipe)
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "II",
+        "licenza quantica (Q)": "IV",
+    }
+    assert not check_additional_filters(question_and, recipe)
+
+    question_and["licence_condition"] = "equal"
+    assert not check_additional_filters(question_and, recipe)
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "III",
+        "licenza quantica (Q)": "IV",
+    }
+    assert check_additional_filters(question_and, recipe)
+
+    # Test all three: licence_name, licence_level, and licence_condition
+    question_and["licence_name"] = "licenza psionica (P)"
+    question_and["licence_level"] = "III"
+    question_and["licence_condition"] = "higher"
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "III",
+        "licenza quantica (Q)": "IV",
+    }
+    assert check_additional_filters(question_and, recipe)
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "II",
+        "licenza quantica (Q)": "IV",
+    }
+    assert not check_additional_filters(question_and, recipe)
+
+    question_and["licence_condition"] = "equal"
+    assert not check_additional_filters(question_and, recipe)
+
+    recipe["chef_licences"] = {
+        "licenza psionica (P)": "III",
+        "licenza quantica (Q)": "IV",
+    }
+    assert check_additional_filters(question_and, recipe)

@@ -21,6 +21,53 @@ from src.utils.misc import (
 from src.utils.recipes import add_restaurant_info_to_recipes
 
 
+def process_recipes_pipeline(
+    input_path: Path | str,
+    recipes_output_path: Path | str,
+    restaurant_output_path: Path | str,
+) -> List[Dict]:
+    """
+    Processes the recipe data from markdown files, adds ingredients and techniques, and saves the result to a JSON file.
+    Args:
+        input_path (str): Path to the input directory containing markdown files.
+        recipes_output_path (str): Path to the output JSON file.
+        restaurant_output_path (str): Path to the output JSON file for restaurants.
+    Returns:
+        list: A list of dictionaries containing the processed recipe data.
+    """
+    all_recipes = load_and_process_recipes(
+        input_path, recipes_output_path, restaurant_output_path
+    )
+    all_restaurants = load_and_process_restaurants(input_path, restaurant_output_path)
+
+    all_recipes = add_restaurant_info_to_recipes(all_recipes, all_restaurants)
+
+    keys = [
+        "recipe_techniques",
+        "recipe_techniques_groups",
+        "recipe_restaurant",
+        "chef_licences",
+        "restaurant_planet",
+    ]
+    mapping_list = [
+        technique_names,
+        technique_groups_names,
+        restaurant_names,
+        license_names,
+        planets_names,
+    ]
+    for key, map in zip(keys, mapping_list):
+        all_recipes = clean_data(all_recipes, key, map)
+
+    with recipes_output_path.open("w") as f:
+        json.dump(all_recipes, f, indent=4)
+
+    with restaurant_output_path.open("w") as f:
+        json.dump(all_restaurants, f, indent=4)
+
+    return all_recipes, all_restaurants
+
+
 def load_and_process_recipes(
     input_path: Path | str,
     recipes_output_path: Path | str,
@@ -110,50 +157,3 @@ def load_and_process_restaurants(
         json.dump(all_restaurants, f, indent=4)
 
     return all_restaurants
-
-
-def process_recipes_pipeline(
-    input_path: Path | str,
-    recipes_output_path: Path | str,
-    restaurant_output_path: Path | str,
-) -> List[Dict]:
-    """
-    Processes the recipe data from markdown files, adds ingredients and techniques, and saves the result to a JSON file.
-    Args:
-        input_path (str): Path to the input directory containing markdown files.
-        recipes_output_path (str): Path to the output JSON file.
-        restaurant_output_path (str): Path to the output JSON file for restaurants.
-    Returns:
-        list: A list of dictionaries containing the processed recipe data.
-    """
-    all_recipes = load_and_process_recipes(
-        input_path, recipes_output_path, restaurant_output_path
-    )
-    all_restaurants = load_and_process_restaurants(input_path, restaurant_output_path)
-
-    all_recipes = add_restaurant_info_to_recipes(all_recipes, all_restaurants)
-
-    keys = [
-        "recipe_techniques",
-        "recipe_techniques_groups",
-        "recipe_restaurant",
-        "chef_licences",
-        "restaurant_planet",
-    ]
-    mapping_list = [
-        technique_names,
-        technique_groups_names,
-        restaurant_names,
-        license_names,
-        planets_names,
-    ]
-    for key, map in zip(keys, mapping_list):
-        all_recipes = clean_data(all_recipes, key, map)
-
-    with recipes_output_path.open("w") as f:
-        json.dump(all_recipes, f, indent=4)
-
-    with restaurant_output_path.open("w") as f:
-        json.dump(all_restaurants, f, indent=4)
-
-    return all_recipes, all_restaurants

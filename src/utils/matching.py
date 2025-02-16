@@ -1,4 +1,17 @@
+import csv
+
+import pandas as pd
+
 from .misc import roman_to_int
+
+
+def load_illegal_ingredients(filepath):
+    illegal_ingredients = {}
+    with open(filepath, mode="r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            illegal_ingredients[row["ingredient"]] = int(row["volume"])
+    return illegal_ingredients
 
 
 def check_and_conditions(question, recipe, conditions):
@@ -53,7 +66,7 @@ def check_not_conditions(question, recipe, conditions):
 
 
 def check_additional_filters(question, recipe):
-    # Single match 1 to 1
+    # Filters based on groups, restaurant - single match 1 to 1
     for q_key, r_key in [
         ("group", "recipe_group"),
         ("restaurants", "recipe_restaurant"),
@@ -62,7 +75,7 @@ def check_additional_filters(question, recipe):
             if question.get(q_key) != recipe.get(r_key):
                 return False
 
-    # Multiple many to 1
+    # Filtersa based on planet - multiple many to 1
     for q_key, r_key in [
         ("planet", "restaurant_planet"),
     ]:
@@ -70,8 +83,8 @@ def check_additional_filters(question, recipe):
             if not any(item == recipe.get(r_key) for item in question.get(q_key)):
                 return False
 
-    # Multiple many to many
-    if question["sirius_flag"]:
+    # Filters on technique groups based on Sirius flag - multiple many to many
+    if question.get("sirius_flag"):
         for q_key, r_key in [
             ("sirius_techniques_groups", "recipe_technique_groups"),
         ]:
@@ -82,31 +95,63 @@ def check_additional_filters(question, recipe):
                     return False
 
     # Filter based on licenses
-    if question.get("licence_name"):
-        required_license_name = question["licence_name"]
-        chef_licenses = recipe.get("chef_licences", [])
+    required_license_name = question.get("licence_name")
+    required_license_level = question.get("licence_level")
+    required_license_condition = question.get("licence_condition")
+    chef_licenses = recipe.get("chef_licences", {})
 
-        if not any(
-            license_name == required_license_name
-            for license in chef_licenses
-            for license_name in license.keys()
-        ):
+    if (
+        required_license_name
+        and not required_license_level
+        and not required_license_condition
+    ):
+        if required_license_name not in chef_licenses:
             return False
 
-    if question.get("licence_level") and question.get("licence_condition"):
-        chef_licenses = recipe.get("chef_licences", [])
-        required_license_level = question["licence_level"]
-        required_license_condition = question["licence_condition"]
-
-        if not any(
-            (
+    if (
+        required_license_level
+        and required_license_condition
+        and not required_license_name
+    ):
+        if required_license_condition == "higher":
+            if not any(
                 roman_to_int(license_level) >= roman_to_int(required_license_level)
-                if required_license_condition == "higher"
-                else roman_to_int(license_level) == roman_to_int(required_license_level)
-            )
-            for license in chef_licenses
-            for license_level in license.values()
-        ):
+                for license_level in chef_licenses.values()
+            ):
+                return False
+        elif required_license_condition == "equal":
+            if not any(
+                roman_to_int(license_level) == roman_to_int(required_license_level)
+                for license_level in chef_licenses.values()
+            ):
+                return False
+
+    if required_license_name and required_license_level and required_license_condition:
+        if required_license_name not in chef_licenses:
             return False
+            chef_license_level = chef_licenses[required_license_name]
+        if required_license_condition == "higher":
+            if roman_to_int(chef_license_level) < roman_to_int(required_license_level):
+                return False
+        elif required_license_condition == "equal":
+            if roman_to_int(chef_license_level) != roman_to_int(required_license_level):
+                return False
+
+    # Filter based on galactic code
+    if "quantita legali" in question.get("galactic_code", []):
+        illegal_ingredients_df = pd.read_csv("/path/to/illegal_ingredients.csv")
+        illegal_ingredients = dict(
+            zip(illegal_ingredients_df["ingredient"], illegal_ingredients_df["volume"])
+        )
+        recipe_name = recipe.get("recipe_name")
+        for restricted in recipe.get("restricted_ingredients", []):
+            if restricted.get("recipe") == recipe_name:
+                ingredient = restricted.get("ingredient")
+                quantity = restricted.get("quantity")
+                if (
+                    ingredient in illegal_ingredients
+                    and quantity > illegal_ingredients[ingredient]
+                ):
+                    return False
 
     return True

@@ -84,3 +84,8 @@ To contribute to this project, follow these steps:
 - [x] postprocessing - clean techniques, restaurants, planets, licences using lookup lists
 - [x] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)
 - [ ] postprocessing - improve lookup lists
+
+problems:
+- sirius: it might be the chef license
+- chef licences: we don't find the level
+- recipe groups (armonisti ecc): they are too many, problems at extraction

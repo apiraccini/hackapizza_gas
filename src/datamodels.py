@@ -167,29 +167,46 @@ class RestaurantModel(BaseModel):
         default=None,
         description="Planet of the restaurant",
     )
-    chef_licences: conlist(
+    chef_licences: Dict[
+        Literal[
+            "licenza psionica (P)",
+            "licenza temporale (t)",
+            "licenza gravitazionale (G)",
+            "licenza antimateria (e+)",
+            "licenza magnetica (Mx)",
+            "licenza quantica (Q)",
+            "licenza luce (C)",
+            "licenza tecnologica LTK",
+        ],
+        str,
+    ] = Field(
+        default=None,
+        description="List of licenses held by the chef with their levels (e.g. {'licenza psionica (P)': 'II', 'licenza quantica (Q)': 'VI+',...})",
+    )
+    restricted_ingredients: conlist(
         Dict[
-            Literal[
-                "licenza psionica (P)",
-                "licenza temporale (t)",
-                "licenza gravitazionale (G)",
-                "licenza antimateria (e+)",
-                "licenza magnetica (Mx)",
-                "licenza quantica (Q)",
-                "licenza luce (C)",
-                "licenza tecnologica LTK",
-            ],
             str,
+            Literal[
+                "Erba Pipa",
+                "Cristalli di Memoria",
+                "Petali di Eco",
+                "Carne di Drago",
+                "Uova di Fenice",
+                "Lacrime di Unicorno",
+                "Foglie di Mandragora",
+                "Muffa Lunare",
+                "Nettare di Sirena",
+                "Spore Quantiche",
+                "Essenza di Vuoto",
+                "Funghi dell Etere",
+                "Sale Temporale",
+                "Radici di Gravita",
+                "Polvere di Stelle",
+            ],
+            int,
         ],
         min_length=0,
     ) = Field(
         default=None,
-        description="List of licenses held by the chef with their levels",
-    )
-    restricted_ingredients: conlist(
-        Dict[str, int],
-        min_length=0,
-    ) = Field(
-        default=None,
-        description="List of restricted ingredients with their quantities",
+        description="List of dictionaries with keys 'recipe', 'ingrendient' and 'quantity' to indicate the restricted ingredients",
     )

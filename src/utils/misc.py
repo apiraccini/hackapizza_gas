@@ -41,7 +41,13 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
     for item in data_list:
         new_item = item.copy()
         if key in new_item:
-            new_item[key] = clean_value(new_item[key])
+            if key == "chef_licences":
+                new_item[key] = [
+                    {clean_value(k): roman_to_int(v) for k, v in licence.items()}
+                    for licence in new_item[key]
+                ]
+            else:
+                new_item[key] = clean_value(new_item[key])
         cleaned_data_list.append(new_item)
 
     return cleaned_data_list
@@ -139,7 +145,7 @@ def roman_to_int(roman: str | int) -> int:
     prev_value = 0
     for char in reversed(roman):
         if char == "+":
-            continue
+            result = +1
         value = roman_numerals.get(char, 0)
         if value < prev_value:
             result -= value
