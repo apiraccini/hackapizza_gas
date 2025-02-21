@@ -42,10 +42,11 @@ def clean_data(data_list: List[Dict], key: str, mapping_list: List[str]) -> List
         new_item = item.copy()
         if key in new_item:
             if key == "chef_licences":
-                new_item[key] = [
-                    {clean_value(k): roman_to_int(v) for k, v in licence.items()}
-                    for licence in new_item[key]
-                ]
+                if new_item[key]:
+                    new_item[key] = {
+                        clean_value(k): roman_to_int(v)
+                        for k, v in new_item[key].items()
+                    }
             else:
                 new_item[key] = clean_value(new_item[key])
         cleaned_data_list.append(new_item)
@@ -133,6 +134,8 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
 
 
 def roman_to_int(roman: str | int) -> int:
+    if roman is None:
+        return None
     if isinstance(roman, int):
         return roman
 
