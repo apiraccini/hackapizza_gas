@@ -111,7 +111,9 @@ def check_additional_filters(question, recipe):
         return False
 
     # Filter based on galactic code
-    if "quantita legali" in question.get("galactic_code", []):
+    if question.get("galactic_code") and "quantita legali" in question.get(
+        "galactic_code"
+    ):
         illegal_ingredients_df = pd.read_csv(Config.illegal_ingredients_path)
         illegal_ingredients = dict(
             zip(
@@ -124,11 +126,10 @@ def check_additional_filters(question, recipe):
             if restricted.get("recipe") == recipe_name:
                 ingredient = restricted.get("ingredient")
                 quantity = restricted.get("quantity")
-                if (
-                    ingredient in illegal_ingredients
-                    and int(quantity) > illegal_ingredients[ingredient]
-                ):
-                    return False
+                if ingredient in illegal_ingredients:
+                    quantity_int = int("".join(filter(str.isdigit, quantity)))
+                    if quantity_int > illegal_ingredients[ingredient]:
+                        return False
 
     return True
 
@@ -139,6 +140,9 @@ def check_license_conditions(
     required_license_condition,
     chef_licenses,
 ):
+    if chef_licenses is None:
+        return False
+
     if (
         required_license_name
         and not required_license_level
@@ -155,12 +159,16 @@ def check_license_conditions(
         if required_license_condition == "higher":
             if not all(
                 roman_to_int(license_level) >= roman_to_int(required_license_level)
+                if license_level
+                else False
                 for license_level in chef_licenses.values()
             ):
                 return False
         elif required_license_condition == "equal":
             if not any(
                 roman_to_int(license_level) == roman_to_int(required_license_level)
+                if license_level
+                else False
                 for license_level in chef_licenses.values()
             ):
                 return False
