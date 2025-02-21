@@ -149,9 +149,11 @@ def load_and_process_restaurants(
 
     for restaurant in all_restaurants:
         if restaurant.get("chef_licences"):
-            for license in restaurant.get("chef_licences", []):
-                if license.get("level") is not None:
-                    license["level"] = roman_to_int(license["level"])
+            licences = restaurant.get("chef_licences")
+            for key, value in licences.items():
+                if value is not None:
+                    licences[key] = roman_to_int(value)
+            restaurant["chef_licences"] = licences
 
     with restaurant_output_path.open("w") as f:
         json.dump(all_restaurants, f, indent=4)
