@@ -12,6 +12,7 @@ from src.utils.lookup_lists import (
     restaurant_names,
     technique_groups_names,
     technique_names,
+    ingredient_names,
 )
 from src.utils.misc import (
     clean_data,
@@ -92,6 +93,7 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
         "licence_name",
         "planet",
         "sirius_techniques_groups",
+        "ingredients",
     ]
     mapping_list = [
         technique_names,
@@ -99,6 +101,7 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
         license_names,
         planets_names,
         technique_groups_names,
+        ingredient_names
     ]
     for key, map in zip(keys, mapping_list):
         out = clean_data(out, key, map)
