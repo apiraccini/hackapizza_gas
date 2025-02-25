@@ -66,8 +66,8 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
             if not check_additional_filters(question, recipe):
                 continue
             if not check_or_conditions_on_ingredients_techniques(question, recipe):
-                continue   
-            
+                continue
+
             matching_recipes.append(recipe.get("recipe_name"))
 
         question["matching_recipes"] = matching_recipes
@@ -88,6 +88,8 @@ def map_dishes(data: List[Dict], mapping: Dict) -> List[Dict]:
     for question in data:
         matching_recipes_ids = []
         for recipe_name in question.get("matching_recipes", []):
+            if recipe_name.endswith("_"):
+                recipe_name = recipe_name.rstrip("_")
             if recipe_name in mapping:
                 matching_recipes_ids.append(mapping[recipe_name])
         question["matching_recipes_ids"] = matching_recipes_ids

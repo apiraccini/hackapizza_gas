@@ -68,25 +68,28 @@ def check_not_conditions(question, recipe, conditions):
 
 
 def check_or_conditions_on_ingredients_techniques(question, recipe):
-    
-    if question.get('ingredients') and question.get('ingredients').get("or"):
-    
-        if question.get('techniques') and question.get('techniques').get("or"):
-            question_ingredients_or = question.get('ingredients').get("or")
-            question_techniques_or = question.get('techniques').get("or") 
-    
+    if question.get("ingredients") and question.get("ingredients").get("or"):
+        if question.get("techniques") and question.get("techniques").get("or"):
+            question_ingredients_or = question.get("ingredients").get("or")
+            question_techniques_or = question.get("techniques").get("or")
+
             if len(question_ingredients_or) == 1 and len(question_techniques_or) == 1:
                 ingredient = question_ingredients_or[0]
                 technique = question_techniques_or[0]
-                recipe_ingredients = recipe.get('recipe_ingredients', [])
-                recipe_techniques = recipe.get('recipe_techniques', [])
-    
+                recipe_ingredients = recipe.get("recipe_ingredients", [])
+                recipe_techniques = recipe.get("recipe_techniques", [])
+
                 if not recipe_ingredients and not recipe_techniques:
                     return False
 
-                cond_and = ingredient in recipe_ingredients and technique in recipe_techniques
-                cond_not_any = ingredient not in recipe_ingredients and technique not in recipe_techniques
-    
+                cond_and = (
+                    ingredient in recipe_ingredients and technique in recipe_techniques
+                )
+                cond_not_any = (
+                    ingredient not in recipe_ingredients
+                    and technique not in recipe_techniques
+                )
+
                 if cond_and or cond_not_any:
                     return False
     return True
@@ -98,8 +101,11 @@ def check_additional_filters(question, recipe):
         ("group", "recipe_group"),  # TODO: fix groups
         ("restaurants", "recipe_restaurant"),
     ]:
-        if question.get(q_key) and recipe.get(r_key):
-            if question.get(q_key) != recipe.get(r_key):
+        if question.get(q_key):
+            if recipe.get(r_key) is not None:
+                if question.get(q_key) != recipe.get(r_key):
+                    return False
+            else:
                 return False
 
     # Filters based on planet - multiple many to 1
@@ -155,7 +161,6 @@ def check_additional_filters(question, recipe):
                     quantity_int = int("".join(filter(str.isdigit, quantity)))
                     if quantity_int > illegal_ingredients[ingredient]:
                         return False
-
 
     return True
 

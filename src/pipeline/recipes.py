@@ -107,7 +107,7 @@ def load_and_process_recipes(
         )
 
     all_recipes = normalise_strings(all_recipes)
-    all_recipes = load_and_process_order(all_recipes, Config.distances_path)
+    all_recipes = load_and_process_order(all_recipes, Config.order_path)
 
     for recipe in all_recipes:
         if "recipe_techniques" in recipe:
@@ -186,13 +186,11 @@ def load_and_process_order(
     data_order["ordine"] = [normalise_string(item) for item in data_order["ordine"]]
 
     for diz in recipes:
-        diz.pop("recipe_group", None)
         if any(x in diz.get("recipe_name") for x in data_order.ricetta):
             data_tmp = data_order.loc[
                 data_order.ricetta == diz.get("recipe_name"), "ordine"
             ]
             diz["recipe_group"] = data_tmp.loc[data_tmp.index[0],]
-            print(diz.get("recipe_name"))
         else:
             diz["recipe_group"] = None
 
