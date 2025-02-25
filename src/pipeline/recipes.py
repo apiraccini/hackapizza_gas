@@ -11,6 +11,7 @@ from src.utils.lookup_lists import (
     restaurant_names,
     technique_groups_names,
     technique_names,
+    ingredient_names,
 )
 from src.utils.misc import (
     clean_data,
@@ -48,6 +49,7 @@ def process_recipes_pipeline(
         "recipe_restaurant",
         "chef_licences",
         "restaurant_planet",
+        "recipe_ingredients",
     ]
     mapping_list = [
         technique_names,
@@ -55,6 +57,7 @@ def process_recipes_pipeline(
         restaurant_names,
         license_names,
         planets_names,
+        ingredient_names,
     ]
     for key, map in zip(keys, mapping_list):
         all_recipes = clean_data(all_recipes, key, map)

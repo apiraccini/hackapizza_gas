@@ -7,6 +7,7 @@ from src.utils.matching import (
     check_and_conditions,
     check_not_conditions,
     check_or_conditions,
+    check_or_conditions_on_ingredients_techniques,
 )
 
 
@@ -64,7 +65,9 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
                 continue
             if not check_additional_filters(question, recipe):
                 continue
-
+            if not check_or_conditions_on_ingredients_techniques(question, recipe):
+                continue   
+            
             matching_recipes.append(recipe.get("recipe_name"))
 
         question["matching_recipes"] = matching_recipes
