@@ -2,20 +2,23 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
+import pandas as pd
+
 from src.config import Config
 from src.utils.ingestion import ingest_md_to_json
 from src.utils.llm import get_model_source, process_data
 from src.utils.lookup_lists import (
+    ingredient_names,
     license_names,
     planets_names,
     restaurant_names,
     technique_groups_names,
     technique_names,
-    ingredient_names,
 )
 from src.utils.misc import (
     clean_data,
     extract_technique_groups,
+    normalise_string,
     normalise_strings,
     roman_to_int,
 )
@@ -104,6 +107,7 @@ def load_and_process_recipes(
         )
 
     all_recipes = normalise_strings(all_recipes)
+    all_recipes = load_and_process_order(all_recipes, Config.distances_path)
 
     for recipe in all_recipes:
         if "recipe_techniques" in recipe:
@@ -162,3 +166,34 @@ def load_and_process_restaurants(
         json.dump(all_restaurants, f, indent=4)
 
     return all_restaurants
+
+
+def load_and_process_order(
+    recipes: List[Dict], input_order_path: Path | str
+) -> List[Dict]:
+    """
+    Loads and processes the order dish data from csv files.
+    Args:
+        recipes (list): List of dict with recipes.
+        input_order_path (str): Path from the csv file.
+    Returns:
+        list: A list of dictionaries containing the processed recièes data.
+    """
+
+    data_order = pd.read_csv(input_order_path)
+
+    data_order["ricetta"] = [normalise_string(item) for item in data_order["ricetta"]]
+    data_order["ordine"] = [normalise_string(item) for item in data_order["ordine"]]
+
+    for diz in recipes:
+        diz.pop("recipe_group", None)
+        if any(x in diz.get("recipe_name") for x in data_order.ricetta):
+            data_tmp = data_order.loc[
+                data_order.ricetta == diz.get("recipe_name"), "ordine"
+            ]
+            diz["recipe_group"] = data_tmp.loc[data_tmp.index[0],]
+            print(diz.get("recipe_name"))
+        else:
+            diz["recipe_group"] = None
+
+    return recipes

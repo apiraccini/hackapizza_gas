@@ -25,6 +25,7 @@ class Config:
     }
     distances_path = Path("data/raw/Misc/Distanze.csv")
     illegal_ingredients_path = Path("data/raw/illegal_ingredients.csv")
+    order_path = Path("data/processed/Ordini.csv")
 
     # prompt templates
     # questions
