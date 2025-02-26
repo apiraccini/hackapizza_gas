@@ -112,8 +112,11 @@ def check_additional_filters(question, recipe):
     for q_key, r_key in [
         ("planet", "restaurant_planet"),
     ]:
-        if question.get(q_key) and recipe.get(r_key):
-            if not any(item == recipe.get(r_key) for item in question.get(q_key)):
+        if question.get(q_key):
+            if recipe.get(r_key):
+                if not any(item == recipe.get(r_key) for item in question.get(q_key)):
+                    return False
+            else:
                 return False
 
     # Filters on technique groups based on Sirius flag - multiple many to many
@@ -121,10 +124,14 @@ def check_additional_filters(question, recipe):
         for q_key, r_key in [
             ("sirius_techniques_groups", "recipe_technique_groups"),
         ]:
-            if question.get(q_key) and recipe.get(r_key):
-                if not all(
-                    item in recipe.get(r_key, ["error"]) for item in question.get(q_key)
-                ):
+            if question.get(q_key):
+                if recipe.get(r_key):
+                    if not all(
+                        item in recipe.get(r_key, ["error"])
+                        for item in question.get(q_key)
+                    ):
+                        return False
+                else:
                     return False
 
     # Filter based on licenses
