@@ -15,13 +15,6 @@ def main():
     paths = Config.data_path_dict
     print("Data paths retrieved")
 
-    # Process questions
-    print("Processing questions")
-    questions_data = process_questions_pipeline(
-        input_path=paths["input_questions_path"],
-        output_path=paths["output_questions_path"],
-    )
-
     # Process recipes
     print("Processing recipes")
     recipes_mapping = json.load(open(paths["recipes_mapping_path"]))
@@ -31,6 +24,13 @@ def main():
         input_path=paths["input_recipes_path"],
         recipes_output_path=paths["output_recipes_path"],
         restaurant_output_path=paths["output_restaurants_path"],
+    )
+
+    # Process questions
+    print("Processing questions")
+    questions_data = process_questions_pipeline(
+        input_path=paths["input_questions_path"],
+        output_path=paths["output_questions_path"],
     )
 
     # Match recipes with questions
@@ -47,7 +47,7 @@ def main():
     df = get_output_df(questions_recipes_mapped)
     df.to_csv(paths["output_result_path"], index=False)
 
-    # print("Pipeline completed successfully")
+    print("Pipeline completed successfully")
 
 
 if __name__ == "__main__":

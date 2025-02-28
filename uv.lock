@@ -1,12 +1,16 @@
 version = 1
 requires-python = ">=3.10"
 resolution-markers = [
-    "python_full_version >= '3.12' and platform_machine == 'x86_64' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'x86_64' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and platform_machine == 'x86_64' and sys_platform == 'darwin'",
     "python_full_version == '3.11.*' and platform_machine == 'x86_64' and sys_platform == 'darwin'",
     "python_full_version < '3.11' and platform_machine == 'x86_64' and sys_platform == 'darwin'",
-    "python_full_version >= '3.12' and platform_machine != 'x86_64' and sys_platform == 'darwin'",
-    "python_full_version >= '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version >= '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version >= '3.13' and platform_machine != 'x86_64' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and platform_machine != 'x86_64' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
     "python_full_version == '3.11.*' and platform_machine != 'x86_64' and sys_platform == 'darwin'",
     "python_full_version == '3.11.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
     "(python_full_version == '3.11.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.11.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
@@ -17,14 +21,14 @@ resolution-markers = [
 
 [[package]]
 name = "aisuite"
-version = "0.1.8"
+version = "0.1.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/45/80927ffeb0dee273fc95d78b0b5666cc3e16cd1bbdfe0b4b3543153d8142/aisuite-0.1.8.tar.gz", hash = "sha256:d9d7dfd97b904d617ee74a2d654905458886499e5e7cb8d81f5be541735abaa8", size = 15477 }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/9d/c7a8a76abb9011dd2bc9a5cb8ffa8231640e20bbdae177ce9ab6cb67c66c/aisuite-0.1.10.tar.gz", hash = "sha256:170e62d4c91fecb22e82a04e058154a111cef473681171e5df7346272e77f414", size = 29052 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/6f/3d13e0a64230d7e6e4c18f05dfbb4b5e56d5d4a817dceb4cc2a641b33475/aisuite-0.1.8-py3-none-any.whl", hash = "sha256:ebd54b0c28a9b99104e020e5041dab5c53180e06fa082bea8612e74dac11ea9a", size = 28464 },
+    { url = "https://files.pythonhosted.org/packages/58/c2/9a34a01516de107e5f9406dbfd319b6004340708101d67fa107373da4058/aisuite-0.1.10-py3-none-any.whl", hash = "sha256:c8510ebe38d6546b6a06819171e201fcaf0bf9ae020ffcfe19b6bd90430781ad", size = 43984 },
 ]
 
 [package.optional-dependencies]
@@ -462,6 +466,15 @@ wheels = [
 ]
 
 [[package]]
+name = "docstring-parser"
+version = "0.16"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/08/12/9c22a58c0b1e29271051222d8906257616da84135af9ed167c9e28f85cb3/docstring_parser-0.16.tar.gz", hash = "sha256:538beabd0af1e2db0146b6bd3caa526c35a34d61af9fd2887f3a8a27a739aa6e", size = 26565 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/7c/e9fcff7623954d86bdc17782036cbf715ecab1bec4847c008557affe1ca8/docstring_parser-0.16-py3-none-any.whl", hash = "sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637", size = 36533 },
+]
+
+[[package]]
 name = "easyocr"
 version = "1.7.2"
 source = { registry = "https://pypi.org/simple" }
@@ -570,6 +583,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "aisuite", extra = ["groq", "openai"] },
     { name = "docling" },
+    { name = "docstring-parser" },
     { name = "ipykernel" },
     { name = "pytest" },
     { name = "python-dotenv" },
@@ -578,8 +592,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aisuite", extras = ["groq", "openai"], specifier = ">=0.1.8" },
+    { name = "aisuite", extras = ["groq", "openai"], specifier = ">=0.1.10" },
     { name = "docling", specifier = ">=2.20.0" },
+    { name = "docstring-parser", specifier = ">=0.16" },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
@@ -1327,7 +1342,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.61.1"
+version = "1.65.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1339,9 +1354,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d9/cf/61e71ce64cf0a38f029da0f9a5f10c9fa0e69a7a977b537126dac50adfea/openai-1.61.1.tar.gz", hash = "sha256:ce1851507218209961f89f3520e06726c0aa7d0512386f0f977e3ac3e4f2472e", size = 350784 }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/99/b7c99aaf4ab0b433556ece264d2295232704f7eebdef37d7fe3fd276f114/openai-1.65.1.tar.gz", hash = "sha256:9d9370a20d2b8c3ce319fd2194c2eef5eab59effbcc5b04ff480977edc530fba", size = 357529 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9a/b6/2e2a011b2dc27a6711376808b4cd8c922c476ea0f1420b39892117fa8563/openai-1.61.1-py3-none-any.whl", hash = "sha256:72b0826240ce26026ac2cd17951691f046e5be82ad122d20a8e1b30ca18bd11e", size = 463126 },
+    { url = "https://files.pythonhosted.org/packages/97/0a/405970c3dad0ef5f1b2bbf770d91c4f27b883f1e3f144dca4962da09900f/openai-1.65.1-py3-none-any.whl", hash = "sha256:396652a6452dd42791b3ad8a3aab09b1feb7c1c4550a672586fb300760a8e204", size = 472817 },
 ]
 
 [[package]]

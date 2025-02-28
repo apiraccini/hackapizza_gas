@@ -48,7 +48,7 @@ def process_data(
                 message=message,
                 sys_message=system_message,
                 model=f"{provider}:{model}",
-                json_output=True,
+                json_output=False,
             )
             response = json.loads(response)
             item.update(response)
@@ -81,14 +81,16 @@ def call_llm(
         provider_configs={
             "groq": {"api_key": os.getenv("GROQ_API_KEY")},
             "openai": {"api_key": os.getenv("OPENAI_API_KEY")},
-            "gemini": {"api_key": os.getenv("GEMINI_API_KEY")},
         }
     )
 
-    messages = [
-        {"role": "system", "content": sys_message},
-        {"role": "user", "content": message},
-    ]
+    if Config.model == "o1-mini":
+        messages = [{"role": "user", "content": sys_message + message}]
+    else:
+        messages = [
+            {"role": "system", "content": sys_message},
+            {"role": "user", "content": message},
+        ]
 
     if json_output:
         response_format = {"type": "json_object"}

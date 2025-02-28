@@ -4,10 +4,10 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = True
+    debug = False
 
-    provider = "gemini"  # "groq", "openai"
-    model = "flash-2.0-flash"  # "gpt-4o", "deepseek-r1-distill-llama-70b",
+    provider = "openai"  # "groq", "openai"
+    model = "o1-mini"  # "gpt-4o", , "deepseek-r1-distill-llama-70b",
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
@@ -127,7 +127,7 @@ class Config:
     message_template_questions = """
     This is the client request: {request}.
     Don't translate, you must keep the original text language.
-    Return only the JSON instance representing the request, with every field (empty ones as well).
+    Return only the JSON instance representing the request, with every field (empty ones as well). Don't use ```json backticks, just raw text.
     """
 
     # recipes
@@ -144,7 +144,7 @@ class Config:
     message_template_recipes = """
     This is the text containing information about the recipe: {request}.
     Don't translate, you must keep the original text language.
-    Return only the JSON instance representing information about the recipe.
+    Return only the JSON instance representing information about the recipe. Don't use ```json backticks, just raw text.
     """
 
     # restaurant
@@ -168,5 +168,5 @@ class Config:
     message_template_restaurant = """
     This is the text containing information about the restaurant: {request}.
     Don't translate, you must keep the original text language.
-    Return only the JSON instance representing information about the restaurant.
+    Return only the JSON instance representing information about the restaurant. Don't use ```json backticks, just raw text.
     """
