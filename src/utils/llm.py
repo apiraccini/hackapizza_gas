@@ -78,8 +78,11 @@ def call_llm(
     """
 
     client = ai.Client(
-        # provider_configs={"groq": {"api_key": os.getenv("GROQ_API_KEY")}},
-        provider_configs={"openai": {"api_key": os.getenv("OPENAI_API_KEY")}}
+        provider_configs={
+            "groq": {"api_key": os.getenv("GROQ_API_KEY")},
+            "openai": {"api_key": os.getenv("OPENAI_API_KEY")},
+            "gemini": {"api_key": os.getenv("GEMINI_API_KEY")},
+        }
     )
 
     messages = [

@@ -6,8 +6,8 @@ class Config:
 
     debug = True
 
-    provider = "openai" # "groq", "openai"
-    model = "gpt-4o"  # "deepseek-r1-distill-llama-70b",  "llama-3.3-70b-versatile", "gpt-4o"
+    provider = "gemini"  # "groq", "openai"
+    model = "flash-2.0-flash"  # "gpt-4o", "deepseek-r1-distill-llama-70b",
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
@@ -35,7 +35,7 @@ class Config:
     You must extract the information using the pydantic model below and return a JSON format.\n\n{output_model_str}
     
     With regards to the required licence, this is the complete list:
-    - "licenza pisonica (P)"
+    - "licenza pisonica (P)"# Add the project root directory to the Python path
     - "licenza temporale (t)"
     - "licenza gravitazionale (G)"
     - "licenza antimateria (e+)"
