@@ -6,8 +6,8 @@ class Config:
 
     debug = False
 
-    provider = "openai"  # "groq", "openai"
-    model = "o1-mini"  # "gpt-4o", , "deepseek-r1-distill-llama-70b",
+    provider = "groq"  # "groq", "openai"
+    model = "qwen-2.5-32b"  # "gpt-4o", , "deepseek-r1-distill-llama-70b",
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
