@@ -81,7 +81,8 @@ def check_or_conditions_on_ingredients_techniques(question, recipe):
 
                 if not recipe_ingredients and not recipe_techniques:
                     return False
-
+                if recipe_ingredients is None or recipe_techniques is None:
+                    return False
                 cond_and = (
                     ingredient in recipe_ingredients and technique in recipe_techniques
                 )

@@ -84,8 +84,8 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
             ):
                 question[key]["or_length"] = 1
 
-        if question.get("license_level"):
-            question["license_level"] = roman_to_int(question["license_level"])
+        if question.get("licence_level"):
+            question["licence_level"] = roman_to_int(question["licence_level"])
 
     keys = [
         "techniques",

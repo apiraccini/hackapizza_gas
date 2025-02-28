@@ -57,21 +57,34 @@ def match_recipes(recipe_data: List[Dict], question_data: List[Dict]) -> List[Di
         matching_recipes = []
 
         for recipe in recipe_data:
+            print(recipe["recipe_name"])
             if not check_and_conditions(question, recipe, keys):
                 continue  # skip recipe
-            if not check_or_conditions(question, recipe, keys):
-                continue
-            if not check_not_conditions(question, recipe, keys):
-                continue
-            if not check_additional_filters(question, recipe):
-                continue
+            print(recipe["recipe_name"])
             if not check_or_conditions_on_ingredients_techniques(question, recipe):
                 continue
-
+            print(recipe["recipe_name"])
+            if not check_or_conditions(question, recipe, keys):
+                continue
+            print(recipe["recipe_name"])
+            if not check_not_conditions(question, recipe, keys):
+                continue
+            print(recipe["recipe_name"])
+            if not check_additional_filters(question, recipe):
+                continue
+            print(recipe["recipe_name"])
+            print("Domanda", "\n")
+            print(question.get("domanda"), "\n")
+            print("Ricetta", "\n")
+            print(recipe.get("recipe_name"), "\n")
+            print("verifica condizione", "\n")
+            print(check_or_conditions_on_ingredients_techniques(question, recipe))
             matching_recipes.append(recipe.get("recipe_name"))
-
+            print(f"ricetta che matcha per la domanda {question.get('domanda')}", "\n")
+            print(matching_recipes)
         question["matching_recipes"] = matching_recipes
-
+        print(f"ricette che matchano e che aggiungo ai risultati della domanda {question.get('domanda')} ","\n")
+        print(question["matching_recipes"])
     return question_data
 
 

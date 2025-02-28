@@ -66,13 +66,13 @@ class RequestModel(BaseModel):
         "licenza quantica (Q)",
         "licenza luce (C)",
         "licenza tecnologica LTK",
-    ] = Field(default=None, description="Name of the license")
+    ] = Field(default=None, description="Name of the licence")
     licence_level: str = Field(
         default=None,
-        description="Level of the license",
+        description="Level of the licence",
     )
     licence_condition: Literal["higher", "equal"] = Field(
-        default=None, description="Condition for the license level"
+        default=None, description="Condition for the licence level"
     )
     planet: Literal[
         "Tatooine",
@@ -87,7 +87,7 @@ class RequestModel(BaseModel):
         "Klyntar",
     ] = Field(
         default=None,
-        description="List of desired planets",
+        description="Name of the desired planet",
     )
     planet_distance: int = Field(
         default=None,
@@ -306,7 +306,7 @@ class RestaurantModel(BaseModel):
         str,
     ] = Field(
         default=None,
-        description="List of licenses held by the chef with their levels (e.g. {'licenza psionica (P)': 'II', 'licenza quantica (Q)': 'VI+',...})",
+        description="List of licenscs held by the chef with their levels (e.g. {'licenza psionica (P)': 'II', 'licenza quantica (Q)': 'VI+',...})",
     )
     restricted_ingredients: conlist(
         Dict[

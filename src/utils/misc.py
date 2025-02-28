@@ -117,13 +117,13 @@ def extract_technique_groups(techniques: List[str] | None) -> List[str]:
 
     result = []
     for technique in techniques:
-        normalized_techique = normalise_string(technique)
+        normalized_technique = normalise_string(technique)
         normalized_technique_groups = [
             normalise_string(technique_group)
             for technique_group in technique_groups_names
         ]
         matches = get_close_matches(
-            normalized_techique, normalized_technique_groups, n=1, cutoff=0
+            normalized_technique, normalized_technique_groups, n=1, cutoff=0
         )
         if matches:
             result.append(matches[0])
@@ -140,19 +140,23 @@ def roman_to_int(roman: str | int) -> int:
         return roman
 
     roman = roman.upper()
-    if roman == "0":
-        return 0
+    # if roman == "0":
+    #     return 0
 
-    roman_numerals = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
-    result = 0
-    prev_value = 0
-    for char in reversed(roman):
-        if char == "+":
-            result = +1
-        value = roman_numerals.get(char, 0)
-        if value < prev_value:
-            result -= value
-        else:
-            result += value
-        prev_value = value
-    return result if result >= 0 else 0
+    try:
+        result = int(roman)
+        return result
+    except:
+        roman_numerals = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
+        result = 0
+        prev_value = 0
+        for char in reversed(roman):
+            if char in ["+", "_"]:
+                result += 1
+            value = roman_numerals.get(char, 0)
+            if value < prev_value:
+                result -= value
+            else:
+                result += value
+            prev_value = value
+        return result if result >= 0 else 0

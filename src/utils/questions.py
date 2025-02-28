@@ -21,7 +21,7 @@ def update_planet_keys(questions: List[Dict], distances_path: Path | str) -> Lis
 
     for question in questions:
         if question.get("planet_distance") and question.get("planet"):
-            planet_ok = question.get("planet")[0]
+            planet_ok = question.get("planet")
             if planet_ok:
                 question["planet"] = distances[
                     distances[f"{planet_ok.lower()}"] < question["planet_distance"]
