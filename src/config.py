@@ -4,10 +4,11 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = True
+    debug = False
 
-    provider = "groq"  # "groq", "openai"
-    model = "qwen-2.5-32b"  # "gpt-4o", , "deepseek-r1-distill-llama-70b",
+    provider = "openai"  # "groq", "openai"
+    model = "gpt-4o-mini"
+    # "llama-3.3-70b-specdec", "qwen-2.5-32b", "gpt-4o-mini", "deepseek-r1-distill-llama-70b",
 
     # data paths
     data_path = Path("data/debug") if debug else Path("data/processed")
@@ -46,6 +47,7 @@ class Config:
     - "licenza tecnologica LTK"
     The licence level could be specified as a roman number, arabic number or in italian word: when it is written in italian word, returns the corresponding arabic number (e.g. with 'undici' must be returned '11'). 
     In some case (especially with roman number) the licence level is followed by '+': include also '+'.
+    When it's mentioned that the licence should be "non base", it means that the licence level should be higher than 1 (except for licence "licenza tecnologica LTK", where it means that it should be higher that 2).
     If licences are mentioned in the text, there might be either the name (e.g "licenza pisonica") or the abbreviation (e.g licenza "P"), always report the full name.
 
     Here are some few shot examples for tricky cases:
@@ -113,7 +115,7 @@ class Config:
         "restaurants": null,
         "group": null,
         "licence_name": "licenza tecnologica LTK",
-        "licence_level": 1,
+        "licence_level": 2,
         "licence_condition": "higher",
         "planet": "Asgard",
         "planet_distance": null,
@@ -164,6 +166,7 @@ class Config:
     - "licenza tecnologica LTK"
     The licence level could be specified as a roman number, arabic number or in italian word: when it is written in italian word, returns the corresponding arabic number (e.g. with 'undici' must be returned '11'). 
     In some case (especially with roman number) the licence level is followed by '+': include also '+'.
+    When it's mentioned that the licence should be "non base", it means that the licence level should be higher than 1 (except for licence "licenza tecnologica LTK", where it means that it should be higher that 2).
     If licences are mentioned in the text, there might be either the name (e.g "licenza pisonica") or the abbreviation (e.g licenza "P"), always report the full name.
     """
     message_template_restaurant = """
