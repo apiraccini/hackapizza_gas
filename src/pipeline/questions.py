@@ -127,10 +127,15 @@ def update_planet_keys(questions: List[Dict], distances_path: Path | str) -> Lis
 
     for question in questions:
         if question.get("planet_distance") and question.get("planet"):
-            planet_ok = question.get("planet")
-            if planet_ok:
-                question["planet"] = distances[
-                    distances[f"{planet_ok.lower()}"] < question["planet_distance"]
+            original_planet = question.get("planet")
+            if original_planet:
+                nearby_planets = distances[
+                    distances[f"{original_planet.lower()}"]
+                    < question["planet_distance"]
                 ].index.tolist()
+                if original_planet.lower() not in [p.lower() for p in nearby_planets]:
+                    nearby_planets.append(original_planet)
+
+                question["planet"] = nearby_planets
 
     return questions

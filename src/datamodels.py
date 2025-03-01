@@ -87,7 +87,7 @@ class RequestModel(BaseModel):
         "Klyntar",
     ] = Field(
         default=None,
-        description="Name of the desired planet",
+        description="Name of the desired planet. When this is mentioned, the restaurants field must be empty.)",
     )
     planet_distance: int = Field(
         default=None,
