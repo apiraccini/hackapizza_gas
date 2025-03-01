@@ -114,59 +114,7 @@ def check_or_conditions_on_ingredients_techniques(question, recipe):
     return True
 
 
-def check_license_requirements(recipe_techniques, chef_licenses):
-    """
-    Checks if the chef has all required licenses to perform the recipe techniques.
-    Args:
-        recipe_techniques (list): List of techniques used in the recipe.
-        chef_licenses (dict): Dictionary of chef's licenses with their levels.
-    Returns:
-        bool: True if chef has all required licenses, False otherwise.
-    """
-    if not recipe_techniques or not chef_licenses:
-        return False
-
-    techniques_requirements = load_techniques_requirements()
-
-    for technique in recipe_techniques:
-        if technique in techniques_requirements:
-            required_licenses = techniques_requirements[technique]
-            for license_req in required_licenses:
-                license_name = license_req["licence_name"]
-                required_level = license_req["licence_level"]
-
-                # Convert required level to int
-                required_level_int = (
-                    roman_to_int(required_level) if required_level else 0
-                )
-
-                # Check if chef has the license
-                if license_name not in chef_licenses:
-                    return False
-
-                # Check if chef's license level meets the requirement
-                chef_level = chef_licenses[license_name]
-                chef_level_int = roman_to_int(chef_level) if chef_level else 0
-
-                if chef_level_int < required_level_int:
-                    return False
-
-    return True
-
-
 def check_additional_filters(question, recipe):
-    # Filters based on groups, restaurant - single match 1 to 1
-    for q_key, r_key in [
-        ("group", "recipe_group"),  # TODO: fix groups
-        ("restaurants", "recipe_restaurant"),
-    ]:
-        if question.get(q_key):
-            if recipe.get(r_key) is not None:
-                if question.get(q_key) != recipe.get(r_key):
-                    return False
-            else:
-                return False
-
     # Filters based on planet - multiple many to 1
     for q_key, r_key in [
         ("planet", "restaurant_planet"),
@@ -207,6 +155,18 @@ def check_additional_filters(question, recipe):
     ):
         return False
 
+    # Filters based on groups, restaurant - single match 1 to 1
+    for q_key, r_key in [
+        ("group", "recipe_group"),  # TODO: fix groups
+        ("restaurants", "recipe_restaurant"),
+    ]:
+        if question.get(q_key):
+            if recipe.get(r_key) is not None:
+                if question.get(q_key) != recipe.get(r_key):
+                    return False
+            else:
+                return False
+
     # Filter based on galactic code
     if question.get("galactic_code") and "quantita legali" in question.get(
         "galactic_code"
@@ -231,7 +191,6 @@ def check_additional_filters(question, recipe):
     if question.get(
         "galactic_code"
     ) and "corrette licenze e certificazioni" in question.get("galactic_code"):
-        # Check if the chef has all the required licenses for the recipe's techniques
         recipe_techniques = recipe.get("recipe_techniques", [])
         chef_licenses = recipe.get("chef_licences", {})
 
@@ -268,5 +227,45 @@ def check_license_conditions(
         elif required_license_condition == "equal":
             if roman_to_int(chef_license_level) != roman_to_int(required_license_level):
                 return False
+
+    return True
+
+
+def check_license_requirements(recipe_techniques, chef_licenses):
+    """
+    Checks if the chef has all required licenses to perform the recipe techniques.
+    Args:
+        recipe_techniques (list): List of techniques used in the recipe.
+        chef_licenses (dict): Dictionary of chef's licenses with their levels.
+    Returns:
+        bool: True if chef has all required licenses, False otherwise.
+    """
+    if not recipe_techniques or not chef_licenses:
+        return False
+
+    techniques_requirements = load_techniques_requirements()
+
+    for technique in recipe_techniques:
+        if technique in techniques_requirements:
+            required_licenses = techniques_requirements[technique]
+            for license_req in required_licenses:
+                license_name = license_req["licence_name"]
+                required_level = license_req["licence_level"]
+
+                # Convert required level to int
+                required_level_int = (
+                    roman_to_int(required_level) if required_level else 0
+                )
+
+                # Check if chef has the license
+                if license_name not in chef_licenses:
+                    return False
+
+                # Check if chef's license level meets the requirement
+                chef_level = chef_licenses[license_name]
+                chef_level_int = roman_to_int(chef_level) if chef_level else 0
+
+                if chef_level_int < required_level_int:
+                    return False
 
     return True
