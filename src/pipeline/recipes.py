@@ -22,7 +22,6 @@ from src.utils.misc import (
     normalise_strings,
     roman_to_int,
 )
-from src.utils.recipes import add_restaurant_info_to_recipes
 
 
 def process_recipes_pipeline(
@@ -112,8 +111,6 @@ def load_and_process_recipes(
     for recipe in all_recipes:
         if "recipe_techniques" in recipe:
             recipe_techniques = recipe["recipe_techniques"]
-            recipe_technique_groups = {}
-
             recipe_technique_groups = extract_technique_groups(recipe_techniques)
             recipe["recipe_technique_groups"] = recipe_technique_groups
 
@@ -186,12 +183,41 @@ def load_and_process_order(
     data_order["ordine"] = [normalise_string(item) for item in data_order["ordine"]]
 
     for diz in recipes:
-        if any(x in diz.get("recipe_name") for x in data_order.ricetta):
+        if diz.get("recipe_name") in data_order.ricetta.values:
             data_tmp = data_order.loc[
                 data_order.ricetta == diz.get("recipe_name"), "ordine"
             ]
-            diz["recipe_group"] = data_tmp.loc[data_tmp.index[0],]
+            if not data_tmp.empty:
+                diz["recipe_group"] = data_tmp.iloc[0]
+            else:
+                diz["recipe_group"] = None
         else:
             diz["recipe_group"] = None
+
+    return recipes
+
+
+def add_restaurant_info_to_recipes(
+    recipes: List[Dict], restaurants: List[Dict]
+) -> List[Dict]:
+    """
+    Adds restaurant information to recipes by joining on the recipe_restaurant key from recipes and restaurant_name from restaurants.
+    Args:
+        recipes (list): List of recipes.
+        restaurants (list): List of restaurants.
+    Returns:
+        list: List of recipes with added restaurant information.
+    """
+    restaurant_dict = {
+        restaurant["restaurant_name"]: restaurant for restaurant in restaurants
+    }
+
+    for recipe in recipes:
+        restaurant_name = recipe.get("recipe_restaurant")
+        if restaurant_name and restaurant_name in restaurant_dict:
+            restaurant_info = restaurant_dict[restaurant_name]
+            for key, value in restaurant_info.items():
+                if key != "restaurant_name":
+                    recipe[key] = value
 
     return recipes

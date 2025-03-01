@@ -1,10 +1,12 @@
 import csv
+import json
+from functools import lru_cache
 
 import pandas as pd
 
 from src.config import Config
 
-from .misc import roman_to_int
+from .misc import normalise_string, roman_to_int
 
 
 def load_illegal_ingredients(filepath):
@@ -14,6 +16,29 @@ def load_illegal_ingredients(filepath):
         for row in reader:
             illegal_ingredients[row["ingredient"]] = int(row["volume"])
     return illegal_ingredients
+
+
+@lru_cache(maxsize=1)
+def load_techniques_requirements():
+    """
+    Loads and normalizes the techniques requirements from JSON file.
+    Returns:
+        dict: Dictionary mapping technique names to required licenses.
+    """
+    try:
+        with open(Config.techniques_requirements_path, "r") as f:
+            requirements = json.load(f)
+
+        # Normalize technique names to match recipe technique names
+        normalized_requirements = {}
+        for item in requirements:
+            technique = normalise_string(item["technique"])
+            normalized_requirements[technique] = item["required_licences"]
+
+        return normalized_requirements
+    except Exception as e:
+        print(f"Error loading techniques requirements: {e}")
+        return {}
 
 
 def check_and_conditions(question, recipe, conditions):
@@ -79,20 +104,53 @@ def check_or_conditions_on_ingredients_techniques(question, recipe):
                 recipe_ingredients = recipe.get("recipe_ingredients", [])
                 recipe_techniques = recipe.get("recipe_techniques", [])
 
-                if not recipe_ingredients and not recipe_techniques:
-                    return False
                 if recipe_ingredients is None or recipe_techniques is None:
                     return False
-                cond_and = (
-                    ingredient in recipe_ingredients and technique in recipe_techniques
-                )
-                cond_not_any = (
+                if (
                     ingredient not in recipe_ingredients
                     and technique not in recipe_techniques
+                ):
+                    return False
+    return True
+
+
+def check_license_requirements(recipe_techniques, chef_licenses):
+    """
+    Checks if the chef has all required licenses to perform the recipe techniques.
+    Args:
+        recipe_techniques (list): List of techniques used in the recipe.
+        chef_licenses (dict): Dictionary of chef's licenses with their levels.
+    Returns:
+        bool: True if chef has all required licenses, False otherwise.
+    """
+    if not recipe_techniques or not chef_licenses:
+        return False
+
+    techniques_requirements = load_techniques_requirements()
+
+    for technique in recipe_techniques:
+        if technique in techniques_requirements:
+            required_licenses = techniques_requirements[technique]
+            for license_req in required_licenses:
+                license_name = license_req["licence_name"]
+                required_level = license_req["licence_level"]
+
+                # Convert required level to int
+                required_level_int = (
+                    roman_to_int(required_level) if required_level else 0
                 )
 
-                if cond_and or cond_not_any:
+                # Check if chef has the license
+                if license_name not in chef_licenses:
                     return False
+
+                # Check if chef's license level meets the requirement
+                chef_level = chef_licenses[license_name]
+                chef_level_int = roman_to_int(chef_level) if chef_level else 0
+
+                if chef_level_int < required_level_int:
+                    return False
+
     return True
 
 
@@ -170,6 +228,16 @@ def check_additional_filters(question, recipe):
                     if quantity_int > illegal_ingredients[ingredient]:
                         return False
 
+    if question.get(
+        "galactic_code"
+    ) and "corrette licenze e certificazioni" in question.get("galactic_code"):
+        # Check if the chef has all the required licenses for the recipe's techniques
+        recipe_techniques = recipe.get("recipe_techniques", [])
+        chef_licenses = recipe.get("chef_licences", {})
+
+        if not check_license_requirements(recipe_techniques, chef_licenses):
+            return False
+
     return True
 
 
@@ -189,28 +257,6 @@ def check_license_conditions(
     ):
         if required_license_name not in chef_licenses:
             return False
-
-    if (
-        required_license_level
-        and required_license_condition
-        and not required_license_name
-    ):
-        if required_license_condition == "higher":
-            if not all(
-                roman_to_int(license_level) >= roman_to_int(required_license_level)
-                if license_level
-                else False
-                for license_level in chef_licenses.values()
-            ):
-                return False
-        elif required_license_condition == "equal":
-            if not any(
-                roman_to_int(license_level) == roman_to_int(required_license_level)
-                if license_level
-                else False
-                for license_level in chef_licenses.values()
-            ):
-                return False
 
     if required_license_name and required_license_level and required_license_condition:
         if required_license_name not in chef_licenses:

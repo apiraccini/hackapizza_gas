@@ -7,19 +7,18 @@ import pandas as pd
 from src.config import Config
 from src.utils.llm import get_model_source, process_data
 from src.utils.lookup_lists import (
+    ingredient_names,
     license_names,
     planets_names,
     restaurant_names,
     technique_groups_names,
     technique_names,
-    ingredient_names,
 )
 from src.utils.misc import (
     clean_data,
     normalise_strings,
     roman_to_int,
 )
-from src.utils.questions import update_planet_keys
 
 
 def process_questions_pipeline(input_path: Path | str, output_path: Path | str):
@@ -101,7 +100,7 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
         license_names,
         planets_names,
         technique_groups_names,
-        ingredient_names
+        ingredient_names,
     ]
     for key, map in zip(keys, mapping_list):
         out = clean_data(out, key, map)
@@ -109,3 +108,29 @@ def postprocess_results(question_data: List[Dict]) -> List[Dict]:
     out = normalise_strings(out)
 
     return out
+
+
+def update_planet_keys(questions: List[Dict], distances_path: Path | str) -> List[Dict]:
+    """
+    Updates the planet keys in the question list based on the distance logic.
+    Args:
+        questions (list): List of questions.
+        distances_path (str): Path to the CSV file containing distances.
+    Returns:
+        list: List of questions with updated planet keys.
+    """
+    distances = pd.read_csv(distances_path)
+    distances.index = distances["/"]
+    distances = distances.drop(columns="/")
+    distances.columns = distances.columns.str.lower()
+    distances.index = distances.index.str.lower()
+
+    for question in questions:
+        if question.get("planet_distance") and question.get("planet"):
+            planet_ok = question.get("planet")
+            if planet_ok:
+                question["planet"] = distances[
+                    distances[f"{planet_ok.lower()}"] < question["planet_distance"]
+                ].index.tolist()
+
+    return questions

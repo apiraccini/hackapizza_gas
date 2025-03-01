@@ -4,7 +4,7 @@ from pathlib import Path
 class Config:
     """Configuration class for the project."""
 
-    debug = False
+    debug = True
 
     provider = "groq"  # "groq", "openai"
     model = "qwen-2.5-32b"  # "gpt-4o", , "deepseek-r1-distill-llama-70b",
@@ -26,6 +26,7 @@ class Config:
     distances_path = Path("data/raw/Misc/Distanze.csv")
     illegal_ingredients_path = Path("data/raw/illegal_ingredients.csv")
     order_path = Path("data/processed/Ordini.csv")
+    techniques_requirements_path = Path("data/raw/techniques_requirements.json")
 
     # prompt templates
     # questions
