@@ -6,7 +6,7 @@ This is our team solution for datapizza hackathon.
 
 Benvenuti e benvenute nel Ciclo Cosmico 789, dove l'umanità ha superato non solo i confini del proprio sistema solare, ma anche quelli delle dimensioni conosciute. In questo vasto intreccio di realtà e culture, la gastronomia si è evoluta in un'arte che trascende spazio e tempo.
 
-Ristoranti di ogni tipo arricchiscono il tessuto stesso del multiverso: dai sushi bar di Pandora che servono prelibati sashimi di Magikarp e ravioli al Vaporeon, alle taverne di Tatooine dove l’Erba Pipa viene utilizzata per insaporire piatti prelibati, fino ai moderni locali dove lo Slurm compone salse dai sapori contrastanti - l'universo gastronomico è vasto e pieno di sorprese.
+Ristoranti di ogni tipo arricchiscono il tessuto stesso del multiverso: dai sushi bar di Pandora che servono prelibati sashimi di Magikarp e ravioli al Vaporeon, alle taverne di Tatooine dove l'Erba Pipa viene utilizzata per insaporire piatti prelibati, fino ai moderni locali dove lo Slurm compone salse dai sapori contrastanti - l'universo gastronomico è vasto e pieno di sorprese.
 
 L'espansione galattica ha portato con sé nuove responsabilità. La Federazione Galattica monitora attentamente ogni ingrediente, tecnica di preparazione e certificazione necessaria per garantire che il cibo servito sia sicuro per tutte le specie senzienti. Gli chef devono destreggiarsi tra regolamenti complessi, gestire ingredienti esotici che esistono simultaneamente in più stati quantici e rispettare le restrizioni alimentari di centinaia di specie provenienti da ogni angolo del multiverso.
 
@@ -46,46 +46,35 @@ To set up the project with uv, follow these steps:
     ```
 4. You can add and remove packages using `uv add` and `uv remove`
 
-## Contributing
+## Solution description
 
-To contribute to this project, follow these steps:
+Our solution is a structured pipeline that processes recipe and question data to match user queries with appropriate dishes from the galactic culinary universe. The system leverages LLM-based extraction to understand both recipes and user questions, followed by a robust matching algorithm that accounts for various constraints like ingredients, techniques, certifications, and galactic regulations.
 
-1. Branch out from `dev` with a branch named `dev-yourusername`:
-    ```bash
-    git checkout -b dev-yourusername dev
-    ```
+![Pipeline Architecture](images/pipeline_graph.png)
 
-2. Make your changes and commit them:
-    ```bash
-    git add .
-    git commit -m "Description of your changes"
-    ```
+### Key Components
 
-3. Push your branch to the repository:
-    ```bash
-    git push origin dev-yourusername
-    ```
+1. **Data Ingestion and Processing**:
+   - Recipe processing extracts structured data from markdown files containing recipe information
+   - Restaurant and chef details are extracted to validate license requirements and planetary restrictions
+   - Question processing converts natural language queries into structured data with specific criteria
 
-4. Open a pull request to the `dev` branch.
+2. **Data Normalization**:
+   - All extracted data undergoes normalization to ensure consistent matching
+   - License levels are converted from Roman numerals to integers for comparison
+   - Technique groups are derived from individual cooking techniques to support complex queries
 
-## TODO
- 
-- [x] datamodels - add list of known values when applicable (restaurants, planets)
-- [x] markdown - fix markdown files
-- [x] restaurants - extract and process restaurant descriptions and licences
-- [x] filters - on planets (handling of distances)
-- [x] filters - on chef licences (menu)
-- [x] filters - on groups of appartenence (menu)
-- [x] recipes - extract quantities for restriced ingredients
-- [x] restaurants - explore blog posts
-- [x] sirius cosmo - filter on techinque groups
-- [ ] filters - on techinques licences (2 questions, galactic code)
-- [ ] filters - on restricted ingredients (2 questions)
-- [x] postprocessing - clean techniques, restaurants, planets, licences using lookup lists
-- [x] prompts - few shot examples for difficult questions tyes (multiple and or, etc..)
-- [ ] postprocessing - improve lookup lists
+3. **Matching Engine**:
+   - The core matching algorithm evaluates recipes against question criteria using:
+     - AND conditions (required ingredients/techniques)
+     - OR conditions (alternatives accepted)
+     - NOT conditions (excluded ingredients/techniques)
+     - Special galactic regulations (illegal ingredient volumes, required licenses)
+     - Planet distance constraints for delivery feasibility
 
-problems:
-- sirius: it might be the chef license
-- chef licences: we don't find the level
-- recipe groups (armonisti ecc): they are too many, problems at extraction
+4. **Regulatory Compliance**:
+   - Verification of chef licenses against required technique certifications
+   - Monitoring of restricted ingredient volumes against legal limits
+   - Enforcement of planetary restrictions and compatibility
+
+The solution provides accurate dish recommendations while ensuring compliance with all interstellar culinary regulations, helping travelers navigate the diverse gastronomic landscape of the cosmos.
